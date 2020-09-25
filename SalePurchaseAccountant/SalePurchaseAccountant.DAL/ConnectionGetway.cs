@@ -9,7 +9,7 @@ namespace SalePurchaseAccountant.DAL
     public class ConnectionGetway
     {
         private static string _connectionString;
-        private static readonly SqlConnection _sqlConnection;
+        private static SqlConnection _sqlConnection;
         public static void Initialize(string server, string database)
         {
             _connectionString = $"Server={server};Database={database}; Integrated Security=true";
@@ -20,8 +20,8 @@ namespace SalePurchaseAccountant.DAL
         }
         public static SqlConnection GetConnection()
         {
-            //_sqlConnection = new SqlConnection(_connectionString);
-            return _sqlConnection?? new SqlConnection(_connectionString);
+            _sqlConnection = _sqlConnection ?? new SqlConnection(_connectionString);
+            return _sqlConnection;
         }
     }
 }

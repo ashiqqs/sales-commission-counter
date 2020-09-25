@@ -6,10 +6,10 @@ namespace SalePurchaseAccountant.Models
 {
     public interface ICommission
     {
-        double GetSalesCommission(int id);
-        double GetOrdinalCommission(int id);
-        double GetInboundCommission(int id);
-        double GetOutboundCommission(int id);
-        double GetGbCommission(int id);
+        double GetSalesCommission(int id, string month=null);
+        double GetOrdinalCommission(int id, string month=null);
+        double GetInboundCommission(int id, string month = null);
+        double GetOutboundCommission(int id, string month = null);
+        double GetGbCommission(int id, string month = null);
     }
 }

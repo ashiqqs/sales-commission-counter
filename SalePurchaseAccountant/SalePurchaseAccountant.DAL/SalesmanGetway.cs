@@ -1,6 +1,8 @@
 ﻿using Dapper;
 using SalePurchaseAccountant.Models;
+using SalePurchaseAccountant.Models.Accounts;
 using SalePurchaseAccountant.Models.Employee;
+using SalePurchaseAccountant.Models.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +14,6 @@ namespace SalePurchaseAccountant.DAL
     {
         public bool Add(SalesmanModel employee)
         {
-            employee.Code = GetNewCode();
             using (var con = ConnectionGetway.GetConnection())
             {
                 string query = $@"INSERT INTO tblSalesman (Code, Name, ReferenceId,JoiningDate,CompanyId, ThanaId, Email, Address, ContactNo)
@@ -30,32 +31,34 @@ namespace SalePurchaseAccountant.DAL
             }
         }
 
-        public List<SalesmanModel> Get()
+        public List<SalesmanModel> Get(int id=-1)
         {
             using (var con = ConnectionGetway.GetConnection())
             {
-                string query = $"SELECT * FROM tblSalesman";
+                string query = id==-1
+                    ?$"SELECT * FROM tblSalesman"
+                    :$"SELECT * FROM tblSalesman WHERE Id = {id}";
+                return con.Query<SalesmanModel>(query).ToList();
+            }
+        }
+        public List<SalesmanModel> Get(string code=null)
+        {
+            using (var con = ConnectionGetway.GetConnection())
+            {
+                string query = String.IsNullOrEmpty(code)
+                    ? $"SELECT * FROM tblSalesman"
+                    : $"SELECT * FROM tblSalesman WHERE Code = {code}";
                 return con.Query<SalesmanModel>(query).ToList();
             }
         }
 
-        public SalesmanModel Get(int id)
-        {
-            using (var con = ConnectionGetway.GetConnection())
-            {
-                string query = $"SELECT * FROM tblSalesman WHERE Id = {id}";
-                return con.QuerySingle<SalesmanModel>(query);
-            }
-        }
-       
         public bool Update(SalesmanModel employee)
         {
             using (var con = ConnectionGetway.GetConnection())
             {
-                string query = $@"UDATE tblSalesman 
-SET Code='{employee.Code}', Name='{employee.Name}', ReferenceId={employee.ReferenceId},JoiningDate='{employee.JoiningDate}', 
-DesignationId={employee.DesignaitonId},CompanyId={employee.CompanyId},ThanaId={employee.ThanaId}, Email='{employee.Email}', 
-Address='{employee.Address}', ContactNo='{employee.ContactNo}' WHERE Id = {employee.Id}";
+                string query = $@"UDATE tblSalesman SET Name='{employee.Name}', ReferenceId={employee.ReferenceId},JoiningDate='{employee.JoiningDate}'," 
+                               +$"DesignationId={employee.Designaiton},CompanyId={employee.CompanyId},ThanaId={employee.ThanaId}, Email='{employee.Email}'," 
+                               +$"Address='{employee.Address}', ContactNo='{employee.ContactNo}' WHERE Id = {employee.Id}";
                 return con.Execute(query) > 0;
             }
         }
@@ -78,7 +81,7 @@ Address='{employee.Address}', ContactNo='{employee.ContactNo}' WHERE Id = {emplo
             }
         }
 
-        public string GetNewCode()
+        public string GetNewCode(UserType type = UserType.SalesmanMan)
         {
             using (var con = ConnectionGetway.GetConnection())
             {
@@ -89,37 +92,37 @@ Address='{employee.Address}', ContactNo='{employee.ContactNo}' WHERE Id = {emplo
             }
         }
 
-        public int Count(int designationId = -1)
+        public int Count(int designation = -1)
         {
             using (var con = ConnectionGetway.GetConnection())
             {
-                string query = designationId == -1
+                string query = designation == -1
                     ? "SELECT Count(Id) FROM tblSalesman"
-                    : $"SELECT Count(Id) FROM tblSalesman WHERE DesignationId={designationId}";
+                    : $"SELECT Count(Id) FROM tblSalesman WHERE Designation={designation}";
                 int count = con.ExecuteScalar<int>(query);
                 return count;
             }
         }
 
-        public double GetSalesAmount(DateTime fromDate, DateTime toDate,int id=-1)
+        public double GetSalesAmount(string month,UserType type=UserType.SalesmanMan, int id=-1)
         {
             using (var con = ConnectionGetway.GetConnection())
             {
                 string query = id!=-1
-                    ?$"SELECT SUM(Amount) FROM tblSalesmanAccounts WHERE CONVERT(VARCHAR,OperationDate,112)>={fromDate.ToString("yyyyMMdd")} AND CONVERT(VARCHAR,OperationDate,112)<={toDate.ToString("yyyyMMdd")} AND Amount>0 AND Id={id}"
-                    :$"SELECT SUM(Amount) FROM tblSalesmanAccounts WHERE CONVERT(VARCHAR,OperationDate,112)>={fromDate.ToString("yyyyMMdd")} AND CONVERT(VARCHAR,OperationDate,112)<={toDate.ToString("yyyyMMdd")} AND Amount>0";
+                    ?$"SELECT SUM(Amount) FROM tblSalesmanAccounts WHERE CONVERT(VARCHAR(6),OperationDate,112)='{month}' AND Amount>0 AND Id={id}"
+                    :$"SELECT SUM(Amount) FROM tblSalesmanAccounts WHERE CONVERT(VARCHAR(6),OperationDate,112)='{month}' AND Amount>0";
                 double amount = con.ExecuteScalar<double>(query);
                 return amount;
             }
         }
 
-        public double GetPurchaseAmount(DateTime fromDate, DateTime toDate,int id=-1)
+        public double GetPurchaseAmount(string month, UserType type = UserType.SalesmanMan, int id=-1)
         {
             using (var con = ConnectionGetway.GetConnection())
             {
                 string query = id!=-1
-                    ?$"SELECT SUM(Amount)*-1 FROM tblSalesmanAccounts WHERE CONVERT(VARCHAR,OperationDate,112)>={fromDate.ToString("yyyyMMdd")} AND CONVERT(VARCHAR,OperationDate,112)<={toDate.ToString("yyyyMMdd")} AND Amount<0 AND Id={id}"
-                    :$"SELECT SUM(Amount)*-1 FROM tblSalesmanAccounts WHERE CONVERT(VARCHAR,OperationDate,112)>={fromDate.ToString("yyyyMMdd")} AND CONVERT(VARCHAR,OperationDate,112)<={toDate.ToString("yyyyMMdd")} AND Amount<0";
+                    ?$"SELECT SUM(Amount)*-1 FROM tblSalesmanAccounts WHERE CONVERT(VARCHAR(6),OperationDate,112)='{month}' AND Amount<0 AND Id={id}"
+                    :$"SELECT SUM(Amount)*-1 FROM tblSalesmanAccounts WHERE CONVERT(VARCHAR(6),OperationDate,112)='{month}' AND Amount<0";
                 double amount = con.ExecuteScalar<double>(query);
                 return amount;
             }

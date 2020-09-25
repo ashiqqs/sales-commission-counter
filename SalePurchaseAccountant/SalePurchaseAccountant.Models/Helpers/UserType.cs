@@ -4,9 +4,10 @@ using System.Text;
 
 namespace SalePurchaseAccountant.Models.Helpers
 {
-    public enum EmployeeType
+    public enum UserType
     {
-        AlphaMember=1,
+        Company=1,
+        AlphaMember,
         BetaMember,
         SalesmanMan
     }

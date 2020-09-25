@@ -14,7 +14,6 @@ namespace SalePurchaseAccountant.DAL
     {
         public bool Add(MemberModel member)
         {
-            member.Code = GetNewCode((EmployeeType)member.MemberType);
             using (var con = ConnectionGetway.GetConnection())
             {
                 string query = $@"INSERT INTO tblMembers (Code, Name, MemberType,JoiningDate,CompanyId, ThanaId, Email, Address, ContactNo,IsApproved)
@@ -38,19 +37,31 @@ namespace SalePurchaseAccountant.DAL
                 return con.Query<MemberModel>(query).ToList();
             }
         }
-        public MemberModel Get(int id)
+        public List<MemberModel> Get(int id=-1)
         {
             using (var con = ConnectionGetway.GetConnection())
             {
-                string query = $"SELECT * FROM tblMembers WHERE Id = {id}";
-                return con.QuerySingle<MemberModel>(query);
+                string query = id==-1
+                    ?$"SELECT * FROM tblMembers"
+                    :$"SELECT * FROM tblMembers WHERE Id = {id}";
+                return con.Query<MemberModel>(query).ToList();
+            }
+        }
+        public List<MemberModel> Get(string code=null)
+        {
+            using (var con = ConnectionGetway.GetConnection())
+            {
+                string query = String.IsNullOrEmpty(code)
+                    ?$"SELECT * FROM tblMembers"
+                    :$"SELECT * FROM tblMembers WHERE Code = {code}";
+                return con.Query<MemberModel>(query).ToList();
             }
         }
         public bool Update(MemberModel member)
         {
             using (var con = ConnectionGetway.GetConnection())
             {
-                string query = $@"UDATE tblMembers SET Code='{member.Code}', Name='{member.Name}', MemberType={member.MemberType},JoiningDate='{member.JoiningDate}', 
+                string query = $@"UDATE tblMembers SET Name='{member.Name}', MemberType={member.MemberType},JoiningDate='{member.JoiningDate}', 
 CompanyId={member.CompanyId},ThanaId={member.ThanaId}, Email='{member.Email}', 
 Address='{member.Address}', ContactNo='{member.ContactNo}',IsApproved = {member.IsApproved} WHERE Id = {member.Id}";
                 return con.Execute(query) > 0;
@@ -74,13 +85,13 @@ Address='{member.Address}', ContactNo='{member.ContactNo}',IsApproved = {member.
             }
         }
 
-        public string GetNewCode(EmployeeType type)
+        public string GetNewCode(UserType type)
         {
             using (var con = ConnectionGetway.GetConnection())
             {
                 string query = $"SELECT TOP 1 Code FROM tblMembers WHERE MemberType={type} ORDER BY Id DESC";
-                string prefix = type == EmployeeType.AlphaMember ? "AL-"
-                    : (type == EmployeeType.BetaMember) ? "B-"
+                string prefix = type == UserType.AlphaMember ? "AL-"
+                    : (type == UserType.BetaMember) ? "B-"
                     : throw new Exception("Invalid Member Type");
                 string code = con.ExecuteScalar<string>(query) ?? prefix + "000";
                 int.TryParse(code.Split('-')[1], out int codeNum);
@@ -100,46 +111,27 @@ Address='{member.Address}', ContactNo='{member.ContactNo}',IsApproved = {member.
             }
         }
 
-        public double GetSalesAmount(DateTime fromDate, DateTime toDate,int id=-1)
+        public double GetSalesAmount(string month, UserType type, int id=-1)
         {
             using(var con = ConnectionGetway.GetConnection())
             {
-                string query = id!=-1
-                    ?$"SELECT SUM(Amount) FROM tblMemberAccounts WHERE CONVERT(VARCHAR,OperationDate,112)>={fromDate.ToString("yyyyMMdd")} AND CONVERT(VARCHAR,OperationDate,112)<={toDate.ToString("yyyyMMdd")} AND Amount>0 AND Id={id}"
-                    :$"SELECT SUM(Amount) FROM tblMemberAccounts WHERE CONVERT(VARCHAR,OperationDate,112)>={fromDate.ToString("yyyyMMdd")} AND CONVERT(VARCHAR,OperationDate,112)<={toDate.ToString("yyyyMMdd")} AND Amount>0";
+                string query = id != -1
+                    ? $"SELECT SUM(Amount) FROM tblMemberAccounts WHERE Id={id} AND MemberType={type} AND CONVERT(VARCHAR(6),OperationDate,112)='{month}'"
+                    : $"SELECT SUM(Amount) FROM tblMemberAccounts WHERE MemberType={type} AND CONVERT(VARCHAR(6),OperationDate,112)='{month}'";
                 double amount = con.ExecuteScalar<double>(query);
                 return amount;
             }
         }
-        public double GetSalesAmount(DateTime fromDate, DateTime toDate, EmployeeType type)
+        public double GetPurchaseAmount(string month, UserType type, int id=-1)
         {
             using (var con = ConnectionGetway.GetConnection())
             {
-                string query = $"SELECT SUM(Amount) FROM tblMemberAccounts WHERE CONVERT(VARCHAR,OperationDate,112)>={fromDate.ToString("yyyyMMdd")} AND CONVERT(VARCHAR,OperationDate,112)<={toDate.ToString("yyyyMMdd")} AND Amount>0 AND MemberType={type}";
-                    double amount = con.ExecuteScalar<double>(query);
-                return amount;
-            }
-        }
-
-        public double GetPurchaseAmount(DateTime fromDate, DateTime toDate,int id=-1)
-        {
-            using (var con = ConnectionGetway.GetConnection())
-            {
-                string query = id!=-1
-                    ?$"SELECT SUM(Amount)*-1 FROM tblMemberAccounts WHERE CONVERT(VARCHAR,OperationDate,112)>={fromDate.ToString("yyyyMMdd")} AND CONVERT(VARCHAR,OperationDate,112)<={toDate.ToString("yyyyMMdd")} AND Amount<0 AND Id={id}"
-                    :$"SELECT SUM(Amount)*-1 FROM tblMemberAccounts WHERE CONVERT(VARCHAR,OperationDate,112)>={fromDate.ToString("yyyyMMdd")} AND CONVERT(VARCHAR,OperationDate,112)<={toDate.ToString("yyyyMMdd")} AND Amount<0";
+                string query = id != -1
+                    ? $"SELECT SUM(Amount)*-1 FROM tblMemberAccounts WHERE  AND Id={id} AND MemberType={type} AND CONVERT(VARCHAR(6),OperationDate,112)='{month}'"
+                    : $"SELECT SUM(Amount)*-1 FROM tblMemberAccounts WHERE MemberType={type} AND CONVERT(VARCHAR(6),OperationDate,112)='{month}'";
                 double amount = con.ExecuteScalar<double>(query);
                 return amount;
             }
         }
-        public double PurchaseAmount(DateTime fromDate, DateTime toDate, EmployeeType type)
-        {
-            using (var con = ConnectionGetway.GetConnection())
-            {
-                string query = $"SELECT SUM(Amount)*-1 FROM tblMemberAccounts WHERE CONVERT(VARCHAR,OperationDate,112)>={fromDate.ToString("yyyyMMdd")} AND CONVERT(VARCHAR,OperationDate,112)<={toDate.ToString("yyyyMMdd")} AND Amount<0 AND MemberType={type}";
-                    double amount = con.ExecuteScalar<double>(query);
-                return amount;
-            }
-        }
-    }
+}
 }

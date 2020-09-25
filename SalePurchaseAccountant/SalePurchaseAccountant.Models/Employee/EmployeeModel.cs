@@ -6,7 +6,7 @@ namespace SalePurchaseAccountant.Models.Employee
 {
     public abstract class EmployeeModel
     {
-        public int Id { get; set; }
+        public int? Id { get; set; }
         public string Code { get; set; }
         public string Name { get; set; }
         public int CompanyId { get; set; }

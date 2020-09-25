@@ -4,7 +4,7 @@ using System.Text;
 
 namespace SalePurchaseAccountant.Models.Accounts
 {
-    class SalesmanAccountModel:AccountModel
+    public class SalesmanAccountModel:AccountModel
     {
         public int SalesmanId { get; set; }
     }

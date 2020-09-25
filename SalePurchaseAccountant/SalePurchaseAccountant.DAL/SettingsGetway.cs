@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using SalePurchaseAccountant.Models;
 using SalePurchaseAccountant.Models.BasicSettings;
+using SalePurchaseAccountant.Models.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,23 +27,38 @@ namespace SalePurchaseAccountant.DAL
                 return thana;
             }
         }
-        public List<DesignationModel> GetDesignation()
+        public bool SaveCompany(CompanyModel company)
         {
             using (var con = ConnectionGetway.GetConnection())
             {
-                List<DesignationModel> designation = con.Query<DesignationModel>("Select * FROM tblDesignations").ToList();
-                return designation;
-            }
-        }
-        public bool SaveCompany(CompanyModel company)
-        {
-            using(var con = ConnectionGetway.GetConnection())
-            {
                 string query = (company.Id == null || company.Id == 0)
-                ? $@"INSERT INTO Companies (Name, Address, Email,Website,ContactNo) VALUES('{company.Name}', '{company.Address}', '{company.Email}', '{company.Website}', '{company.ContactNo}' )"
-                : $@"UPDATE Companies SET Name='{company.Name}', Address='{company.Address}', Email='{company.Email}',Website='{company.Website}', ContactNo='{company.ContactNo}' WHERE Id={company.Id}";
+        ? $@"INSERT INTO Companies (Name, Address, Email,Website,ContactNo, Code) VALUES('{company.Name}', '{company.Address}', '{company.Email}', '{company.Website}', '{company.ContactNo}','{company.Code}')"
+        : $@"UPDATE Companies SET Name='{company.Name}', Address='{company.Address}', Email='{company.Email}',Website='{company.Website}', ContactNo='{company.ContactNo}' WHERE Id={company.Id}";
+
                 return con.Execute(query) > 0;
             }
         }
+        public List<CompanyModel> Get(string code = null)
+        {
+            using (var con = ConnectionGetway.GetConnection())
+            {
+                string query = String.IsNullOrEmpty(code)
+                    ? $"SELECT * FROM tblCompanies"
+                    : $"SELECT * FROM tblCompanies WHERE Code='{code}'";
+                return con.Query<CompanyModel>(query).ToList();
+            }
+        }
+        public string GetNewCompanyCode()
+        {
+            using (var con = ConnectionGetway.GetConnection())
+            {
+                string query = "SELECT TOP 1 Code FROM tblCompanies ORDER BY Id DESC";
+                string code = con.ExecuteScalar<string>(query) ?? "C-000";
+                int.TryParse(code.Split('-')[1], out int codeNum);
+                return "C-" + ((codeNum + 1).ToString().PadLeft(3, '0'));
+            }
+        }
+
+
     }
 }
