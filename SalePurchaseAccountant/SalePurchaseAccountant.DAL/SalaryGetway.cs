@@ -37,7 +37,7 @@ namespace SalePurchaseAccountant.DAL
         /// </summary>
         /// <param name="code"></param>
         /// <param name="amount"></param>
-        /// <param name="month">provide in yyyyMM format</param>
+        /// <param name="month">value should be in yyyyMM format</param>
         /// <returns></returns>
         public bool AddSalesCommission(string code, double amount, string month = null)
         {
@@ -88,7 +88,7 @@ namespace SalePurchaseAccountant.DAL
         /// 
         /// </summary>
         /// <param name="code">Default is null for getting salary of any code</param>
-        /// <param name="month">Default is null for getting salary of any current month</param>
+        /// <param name="month">Default is null for getting salary of current month</param>
         /// <returns></returns>
         public List<SalaryModel> GetSalary(string code=null, string month = null)
         {
