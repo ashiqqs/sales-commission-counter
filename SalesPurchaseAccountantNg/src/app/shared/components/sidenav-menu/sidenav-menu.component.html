@@ -1,0 +1,15 @@
+<a [href]="'#'+subMenuId" data-toggle="collapse" aria-expanded="false"
+  class="bg-light list-group-item list-group-item-action flex-column align-items-start">
+  <div class="d-flex w-100 justify-content-start align-items-center">
+    <span class="mr-3" [ngClass]="faIcon"></span>
+    <span class="menu-collapsed">{{menuText}}</span>
+    <span class="submenu-icon ml-auto"></span>
+  </div>
+</a>
+<!-- Submenu content -->
+<div [id]="subMenuId" class="collapse sidebar-submenu">
+  <a *ngFor="let subMenu of subMenuList" [routerLink]="subMenu.routeUrl" class="list-group-item list-group-item-action bg-light">
+    <span class="mr-3" [ngClass]="subMenu.faIcon"></span>
+    <span class="menu-collapsed">{{subMenu.linkText}}</span>
+  </a>
+</div>

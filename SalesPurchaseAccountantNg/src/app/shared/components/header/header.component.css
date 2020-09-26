@@ -1,0 +1,17 @@
+
+button{
+    border-radius: 0;
+    margin-left: 1px;
+}
+button:hover{
+    background-color: #17A2B8;
+    border: 1px solid #fff;
+}
+nav a span, img{
+    cursor: pointer;
+}
+nav a span{
+    font-size: 2rem;
+    font-weight: normal;
+    color: #fff;
+}

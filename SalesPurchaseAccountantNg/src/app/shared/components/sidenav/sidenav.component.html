@@ -1,0 +1,26 @@
+<!-- <div class="sidenav-header pt-2">
+  <div id="profile">
+    <img width="120px" height="120px" src="../../../../assets/images/profile.jpg" alt="profile photo">
+  </div>
+  <div class="name-title ml-3 mt-2 text-white">
+    <h5 class="display-5 text-center">Md Ashiqur Rahman</h5>
+    <p class="display-5 text-center">Jr. Software Developer</p>
+  </div>
+</div> -->
+<div class="sidenav-menu">
+  <div class="row" id="body-row">
+    <div id="sidebar-container" class="sidebar-expanded d-md-block">
+      <ul class="list-group">
+
+        <app-sidenav-menu-item [faIcon]="'fa fa-home'" [routeUrl]="'/startup'" [linkText]="'Home'"></app-sidenav-menu-item>
+        <app-sidenav-menu [faIcon]="'fa fa-bars'" [menuText]="'Menu'" [subMenuId]="'sub'"
+        [subMenuList]="[
+        {routeUrl:'', linkText:'sub1', faIcon:'fa fa-eye'},
+        {routeUrl:'', linkText:'sub2', faIcon:'fa fa-edit'}
+        ]">
+      </app-sidenav-menu>
+
+      </ul>
+    </div>
+  </div>
+</div>

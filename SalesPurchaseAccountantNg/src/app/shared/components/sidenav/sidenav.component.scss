@@ -1,0 +1,38 @@
+.sidenav-header{
+    height: 200px;
+    border-bottom: 1px solid#aaa;
+}
+#profile img{
+    border-radius: 100px;
+}
+img{
+    margin-left: 50px;
+    box-shadow: 0px 0px 2px 2px #fff;
+}
+h5, h6{
+    font-weight: 400;
+}
+
+
+#body-row {
+    margin-left:0;
+    margin-right:0;
+}
+
+#sidebar-container {
+    min-height: 65vh;   
+    background-color: white;
+    padding: 0;
+}
+
+/* Sidebar sizes when expanded and expanded */
+.sidebar-expanded {
+    width: 100%;
+}
+.sidebar-collapsed {
+    width: 60px;
+}
+
+#body-col {
+    background-color: #333;
+}

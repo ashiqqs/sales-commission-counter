@@ -1,0 +1,12 @@
+<app-header (toggleSideNav)="showSideNav=$event"></app-header>
+<mat-sidenav-container >
+  <!-- <mat-sidenav mode="side" [opened]="showSideNav">
+    <app-sidenav></app-sidenav>
+  </mat-sidenav> -->
+  <mat-sidenav-content>
+    <div class="content p3">
+      <router-outlet></router-outlet>
+    </div>
+  </mat-sidenav-content>
+</mat-sidenav-container>
+<app-footer></app-footer>

@@ -111,9 +111,10 @@ Address='{member.Address}', ContactNo='{member.ContactNo}',IsApproved = {member.
             }
         }
 
-        public double GetSalesAmount(string month, UserType type, int id=-1)
+        public double GetSalesAmount( UserType type, string month = null, int id=-1)
         {
-            using(var con = ConnectionGetway.GetConnection())
+            month = month ?? DateTime.Now.ToString("yyyyMM");
+            using (var con = ConnectionGetway.GetConnection())
             {
                 string query = id != -1
                     ? $"SELECT SUM(Amount) FROM tblMemberAccounts WHERE Id={id} AND MemberType={type} AND CONVERT(VARCHAR(6),OperationDate,112)='{month}'"

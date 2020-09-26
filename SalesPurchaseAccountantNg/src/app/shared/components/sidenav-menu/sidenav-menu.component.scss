@@ -1,0 +1,29 @@
+.list-group a {
+    height: 50px;
+    color: black;
+}
+
+#sidebar-container .list-group .sidebar-submenu a {
+    height: 45px;
+    padding-left: 30px;
+}
+.sidebar-submenu {
+    font-size: 0.9rem;
+}
+
+/* Closed submenu icon */
+.list-group-item[aria-expanded="false"] .submenu-icon::after {
+    content: " \f0d7";
+    font-family: FontAwesome;
+    display: inline;
+    text-align: right;
+    padding-left: 10px;
+  }
+  /* Opened submenu icon */
+  .list-group-item[aria-expanded="true"] .submenu-icon::after {
+    content: " \f0da";
+    font-family: FontAwesome;
+    display: inline;
+    text-align: right;
+    padding-left: 10px;
+  }

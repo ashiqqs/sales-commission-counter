@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SalePurchaseAccountant.BLL;
+using SalePurchaseAccountant.Models.BasicSettings;
 
 namespace SalePurchaseAccountant.Api.Controller
 {
@@ -17,7 +18,7 @@ namespace SalePurchaseAccountant.Api.Controller
         {
             _settings = new SettingsBll();
         }
-
+        
         [HttpGet]
         [Route("district/{districtId=-1}")]
         public IActionResult GetDistrict(int districtId)

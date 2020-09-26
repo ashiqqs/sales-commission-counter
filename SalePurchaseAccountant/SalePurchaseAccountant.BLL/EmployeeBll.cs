@@ -30,7 +30,7 @@ namespace SalePurchaseAccountant.BLL
         {
             switch (type)
             {
-                case UserType.SalesmanMan:
+                case UserType.Salesman:
                     return _salesman.GetNewCode(type);
                 case UserType.AlphaMember:
                 case UserType.BetaMember:
@@ -130,7 +130,7 @@ namespace SalePurchaseAccountant.BLL
                 case UserType.AlphaMember:
                 case UserType.BetaMember:
                     return _memberAcc.GetPurchaseAmount(month, type, id);
-                case UserType.SalesmanMan:
+                case UserType.Salesman:
                     return _salesmanAcc.GetPurchaseAmount(month, type, id);
                 default:
                     return 0;
@@ -142,9 +142,9 @@ namespace SalePurchaseAccountant.BLL
             {
                 case UserType.AlphaMember:
                 case UserType.BetaMember:
-                    return _memberAcc.GetSalesAmount(month, type, id);
-                case UserType.SalesmanMan:
-                    return _salesmanAcc.GetSalesAmount(month, type, id);
+                    return _memberAcc.GetSalesAmount(type, month,  id);
+                case UserType.Salesman:
+                    return _salesmanAcc.GetSalesAmount(type, month, id);
                 default:
                     return 0;
             }
