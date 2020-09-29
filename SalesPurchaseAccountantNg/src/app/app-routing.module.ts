@@ -3,7 +3,7 @@ import { Routes, RouterModule } from '@angular/router';
 import { DefaultLayoutComponent } from './layouts/default-layout/default-layout.component';
 
 const routes: Routes = [
-  {path:'', redirectTo:'layout2/login', pathMatch:'full'},
+  {path:'', redirectTo:'user/login', pathMatch:'full'},
 ];
 
 @NgModule({

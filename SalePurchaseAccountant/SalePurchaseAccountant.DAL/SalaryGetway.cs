@@ -1,8 +1,10 @@
 ﻿using Dapper;
 using SalePurchaseAccountant.Models.Accounts;
+using SalePurchaseAccountant.Models.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 
@@ -10,26 +12,10 @@ namespace SalePurchaseAccountant.DAL
 {
     public class SalaryGetway
     {
-        public bool CreateNewSalaryAcc(string month=null)
+        public void CreateNewSalaryAcc(SqlConnection connection, SqlTransaction transaction, string month = null)
         {
-            using (var con = ConnectionGetway.GetConnection())
-            {
-                using (var tran = con.BeginTransaction())
-                {
-                    try
-                    {
-                        month = month ?? DateTime.Now.ToString("yyyyMM");
-                        int rowAffect = con.Execute("usp_CreateSalaryAcc", param:new { SalaryMonth=month}, transaction:tran, commandType:CommandType.StoredProcedure);
-                        tran.Commit();
-                        return rowAffect > 0;
-                    }
-                    catch (Exception err)
-                    {
-                        tran.Rollback();
-                        throw new Exception(err.Message);
-                    }
-                }
-            }
+            month = month ?? DateTime.Now.ToString("yyyyMM");
+            connection.Execute("usp_CreateSalaryAcc", param: new { SalaryMonth = month }, transaction: transaction, commandType: CommandType.StoredProcedure);
         }
 
         /// <summary>
@@ -39,50 +25,39 @@ namespace SalePurchaseAccountant.DAL
         /// <param name="amount"></param>
         /// <param name="month">value should be in yyyyMM format</param>
         /// <returns></returns>
-        public bool AddSalesCommission(string code, double amount, string month = null)
+        public void AddSalesCommission(SqlConnection connection, SqlTransaction transaction, string code, double amount, string month = null)
         {
-            using (var con = ConnectionGetway.GetConnection())
-            {
-                month = month ?? DateTime.Now.ToString("yyyyMM");
-                string query = $"UPDATE tblSalaries SET SalesCommission = SalesCommission+{amount} WHERE Code={code} AND ProcessedMonth='{month}'";
-                return con.Execute(query) > 0;
-            }
+            month = month ?? DateTime.Now.ToString("yyyyMM");
+            string query = $"UPDATE tblSalaries SET SalesCommission = SalesCommission+{amount} WHERE Code={code} AND ProcessedMonth='{month}'";
+            connection.Execute(query, transaction: transaction);
+
         }
-        public bool AddOrdinalCommission(string code, double amount, string month = null)
+        public void AddOrdinalCommission(SqlConnection connection, SqlTransaction transaction, string code, double amount, string month = null)
         {
-            using (var con = ConnectionGetway.GetConnection())
-            {
-                month = month ?? DateTime.Now.ToString("yyyyMM");
-                string query = $"UPDATE tblSalaries SET OrdinalCommission = OrdinalCommission+{amount} WHERE Code={code} AND ProcessedMonth='{month}'";
-                return con.Execute(query) > 0;
-            }
+            month = month ?? DateTime.Now.ToString("yyyyMM");
+            string query = $"UPDATE tblSalaries SET OrdinalCommission = OrdinalCommission+{amount} WHERE Code={code} AND ProcessedMonth='{month}'";
+            connection.Execute(query, transaction: transaction);
         }
-        public bool AddInboundCommission(string code, double amount, string month = null)
+        public void AddInboundCommission(SqlConnection connection, SqlTransaction transaction, string code, double amount, string month = null)
         {
             using (var con = ConnectionGetway.GetConnection())
             {
                 month = month ?? DateTime.Now.ToString("yyyyMM");
                 string query = $"UPDATE tblSalaries SET InboundCommission = InboundCommission+{amount} WHERE Code={code} AND ProcessedMonth='{month}'";
-                return con.Execute(query) > 0;
+                connection.Execute(query, transaction: transaction);
             }
         }
-        public bool AddOutboundCommission(string code, double amount, string month = null)
+        public void AddOutboundCommission(SqlConnection connection, SqlTransaction transaction, string code, double amount, string month = null)
         {
-            using (var con = ConnectionGetway.GetConnection())
-            {
-                month = month ?? DateTime.Now.ToString("yyyyMM");
-                string query = $"UPDATE tblSalaries SET OutboundCommission = OutboundCommission+{amount} WHERE Code={code} AND ProcessedMonth='{month}'";
-                return con.Execute(query) > 0;
-            }
+            month = month ?? DateTime.Now.ToString("yyyyMM");
+            string query = $"UPDATE tblSalaries SET OutboundCommission = OutboundCommission+{amount} WHERE Code={code} AND ProcessedMonth='{month}'";
+            connection.Execute(query, transaction: transaction);
         }
-        public bool AddGbCommission(string code, double amount, string month = null)
+        public void AddGbCommission(SqlConnection connection, SqlTransaction transaction, string code, double amount, string month = null)
         {
-            using (var con = ConnectionGetway.GetConnection())
-            {
-                month = month ?? DateTime.Now.ToString("yyyyMM");
-                string query = $"UPDATE tblSalaries SET GbCommission = GbCommission+{amount} WHERE Code={code} AND ProcessedMonth='{month}'";
-                return con.Execute(query) > 0;
-            }
+            month = month ?? DateTime.Now.ToString("yyyyMM");
+            string query = $"UPDATE tblSalaries SET GbCommission = GbCommission+{amount} WHERE Code={code} AND ProcessedMonth='{month}'";
+            connection.Execute(query, transaction: transaction);
         }
         /// <summary>
         /// 
@@ -90,15 +65,12 @@ namespace SalePurchaseAccountant.DAL
         /// <param name="code">Default is null for getting salary of any code</param>
         /// <param name="month">Default is null for getting salary of current month</param>
         /// <returns></returns>
-        public List<SalaryModel> GetSalary(string code=null, string month = null)
+        public List<SalaryViewModel> GetSalary(string code = null, string month = null)
         {
-            using(var con = ConnectionGetway.GetConnection())
+            using (var con = ConnectionGetway.GetConnection())
             {
                 month = month ?? DateTime.Now.ToString("yyyyMM");
-                string query = String.IsNullOrEmpty(code)
-                    ? $"SELECT * FROM tblSalaries WHERE ProcessedMonth = '{month}'"
-                    : $"SELECt * FROM tblSalaries WHERE ProcessedMonth='{month}' AND Code='{code}'";
-                var salaries = con.Query<SalaryModel>(query).ToList();
+                var salaries = con.Query<SalaryViewModel>("usp_GetSalary",param:new { ProcessedMonth=month, Code=code}, commandType:CommandType.StoredProcedure).ToList();
                 return salaries;
             }
         }

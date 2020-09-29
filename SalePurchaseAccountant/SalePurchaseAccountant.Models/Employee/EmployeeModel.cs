@@ -9,8 +9,8 @@ namespace SalePurchaseAccountant.Models.Employee
         public int? Id { get; set; }
         public string Code { get; set; }
         public string Name { get; set; }
-        public int CompanyId { get; set; }
         public int ThanaId { get; set; }
+        
         public DateTime JoiningDate { get; set; }
         public string Email { get; set; }
         public string Address { get; set; }

@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SalePurchaseAccountant.BLL;
-using SalePurchaseAccountant.Models.BasicSettings;
 
 namespace SalePurchaseAccountant.Api.Controller
 {
@@ -26,7 +25,14 @@ namespace SalePurchaseAccountant.Api.Controller
             try
             {
                 var districts = _settings.GetDistrict(districtId);
-                return Ok(districts);
+                if (districts.Count > 0)
+                {
+                    return Ok(new { status = true, result = districts });
+                }
+                else
+                {
+                    return Ok(new { status = false, result = "No district found." });
+                }
             }
             catch (Exception err)
             {
@@ -40,7 +46,14 @@ namespace SalePurchaseAccountant.Api.Controller
             try
             {
                 var thana = _settings.GetThana(districtId,thanaId);
-                return Ok(thana);
+                if (thana.Count > 0)
+                {
+                    return Ok(new { status = true, result = thana });
+                }
+                else
+                {
+                    return Ok(new { status = false, result = thana });
+                }
             }
             catch (Exception err)
             {

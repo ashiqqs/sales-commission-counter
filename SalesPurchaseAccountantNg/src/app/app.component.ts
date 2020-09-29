@@ -8,6 +8,14 @@ import { Router, Routes } from '@angular/router';
 })
 export class AppComponent {
   title = 'sales-purchase-accountant-ng';
-  constructor(){
+  userType;
+  constructor(private router:Router){
+    this.userType = sessionStorage.getItem('userType');
+    if(this.userType){
+      this.router.navigate[('/')]
+    }
+    else{
+      this.router.navigate[('/user/login')]
+    }
   }
 }

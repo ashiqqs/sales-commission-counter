@@ -41,6 +41,10 @@ namespace SalePurchaseAccountant.BLL
         }
         public bool SaveOrUpdateSalesman(SalesmanModel salesman)
         {
+            if (_salesman.Count()>1 && String.IsNullOrEmpty(salesman.Code))
+            {
+                throw new InvalidException("SIDC is required.");
+            }
             if(salesman.Id==null || salesman.Id == 0)
             {
                 SalesmanModel existSalesman = _salesman.Get(salesman.Code).FirstOrDefault();
@@ -50,7 +54,7 @@ namespace SalePurchaseAccountant.BLL
                 }
                 else
                 {
-                    throw new Exception($"{salesman.Code} already exist, try with another code.");
+                    throw new InvalidException($"{salesman.Code} already exist, try with another code.");
                 }
             }
             else
@@ -58,33 +62,58 @@ namespace SalePurchaseAccountant.BLL
                 return _salesman.Update(salesman);
             }
         }
-        public List<SalesmanModel> GetSalesman(int id=-1)
-        {
-            return _salesman.Get(id);
-        }
         public List<SalesmanModel> GetSalesman(string code = null)
         {
             return _salesman.Get(code);
         }
-        public bool DeleteSalesman(int id)
+        public List<SalesmanModel> GetSalesmanByThana(int thanaId)
         {
-            return _salesman.Delete(id);
+            return _salesman.Get(thanaId);
         }
-        public bool PurchaseBySalesman(SalesmanAccountModel salesmanAcc)
+        public bool DeleteSalesman(string code)
         {
-            return _salesmanAcc.Purchase(salesmanAcc);
+            return _salesman.Delete(code);
         }
-        public bool SaleBySalesman(SalesmanAccountModel salesmanAcc)
+        public double PurchaseBySalesman(SalesmanAccountModel salesmanAcc)
         {
-            return _salesmanAcc.Sale(salesmanAcc);
+            if (_salesmanAcc.Purchase(salesmanAcc))
+            {
+                return _salesmanAcc.GetPurchaseAmount(code: salesmanAcc.Code);
+            }
+            else
+            {
+                throw new InvalidException("Purchase Operation Failed.");
+            }
+        }
+        public double SaleBySalesman(SalesmanAccountModel salesmanAcc)
+        {
+            if (_salesmanAcc.Sale(salesmanAcc)){
+                return _salesmanAcc.GetSalesAmount(code: salesmanAcc.Code);
+            }
+            else
+            {
+                throw new InvalidException("Sales Operation failed.");
+            }
         }
         #endregion
 
         #region Member
         public bool SaveOrUpdateMember(MemberModel member)
         {
+            if (String.IsNullOrEmpty(member.Code))
+            {
+                throw new InvalidException("Code is required.");
+            }
+            if (String.IsNullOrEmpty(member.Sidc))
+            {
+                throw new InvalidException("SIDC is required.");
+            }
             if (member.Id == null || member.Id == 0)
             {
+                if (member.MemberType==(int)UserType.AlphaMember && _member.Get(member.ThanaId).Any(e => e.MemberType == (int)UserType.AlphaMember))
+                {
+                    throw new InvalidException("Alpha member already in selected thana");
+                }
                 MemberModel existSalesman = _member.Get(member.Code).FirstOrDefault();
                 if (existSalesman == null)
                 {
@@ -92,7 +121,7 @@ namespace SalePurchaseAccountant.BLL
                 }
                 else
                 {
-                    throw new Exception($"{member.Code} already exist, try with another code.");
+                    throw new InvalidException($"{member.Code} already exist, try with another code.");
                 }
             }
             else
@@ -100,55 +129,70 @@ namespace SalePurchaseAccountant.BLL
                 return _member.Update(member);
             }
         }
-        public List<MemberModel> GetMember(int id = -1)
-        {
-            return _member.Get(id);
-        }
         public List<MemberModel> GetMember(string code = null)
         {
             return _member.Get(code);
         }
-        public bool DeleteMember(int id)
+        public List<MemberModel> GetMemberByThana(int thanaId)
         {
-            return _salesman.Delete(id);
+            return _member.Get(thanaId);
         }
-        public bool PurchaseByMember(MemberAccountModel memberAcc)
+        public bool DeleteMember(string code)
         {
-            return _memberAcc.Purchase(memberAcc);
+            return _salesman.Delete(code);
         }
-        public bool SaleByMember(MemberAccountModel memberAcc)
+        public double PurchaseByMember(MemberAccountModel memberAcc)
         {
-            return _memberAcc.Sale(memberAcc);
+            if (_memberAcc.Purchase(memberAcc))
+            {
+                return _memberAcc.GetPurchaseAmount(code: memberAcc.Code);
+            }
+            else
+            {
+                throw new InvalidException("Purchase Operation Failed.");
+            }
+        }
+        public double SaleByMember(MemberAccountModel memberAcc)
+        {
+           if (_memberAcc.Sale(memberAcc))
+            {
+                return _memberAcc.GetSalesAmount(memberAcc.UserType, code: memberAcc.Code);
+            }
+            else
+            {
+                throw new InvalidCastException("Sales Operation failed.");
+            }
         }
         #endregion
 
         #region Employee
-        public double PurchaseAmount(string month, UserType type, int id=-1)
+        public double PurchaseAmount(string month, UserType type, string code)
         {
             switch (type)
             {
                 case UserType.AlphaMember:
                 case UserType.BetaMember:
-                    return _memberAcc.GetPurchaseAmount(month, type, id);
+                    return _memberAcc.GetPurchaseAmount(type, month, code);
                 case UserType.Salesman:
-                    return _salesmanAcc.GetPurchaseAmount(month, type, id);
+                    return _salesmanAcc.GetPurchaseAmount(type, month, code);
                 default:
                     return 0;
             }
         }
-        public double SalesAmount(string month, UserType type, int id = -1)
+        public double SalesAmount(string month, UserType type, string code)
         {
             switch (type)
             {
                 case UserType.AlphaMember:
                 case UserType.BetaMember:
-                    return _memberAcc.GetSalesAmount(type, month,  id);
+                    return _memberAcc.GetSalesAmount(type, month,  code);
                 case UserType.Salesman:
-                    return _salesmanAcc.GetSalesAmount(type, month, id);
+                    return _salesmanAcc.GetSalesAmount(type, month, code);
                 default:
                     return 0;
             }
         }
+        
         #endregion
     }
 }

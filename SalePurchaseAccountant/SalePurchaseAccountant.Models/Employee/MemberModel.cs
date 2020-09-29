@@ -7,6 +7,6 @@ namespace SalePurchaseAccountant.Models.Employee
     public class MemberModel:EmployeeModel
     {
         public int MemberType { get; set; }
-        public bool IsApproved { get; set; }
+        public string Sidc { get; set; }
     }
 }

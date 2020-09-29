@@ -6,6 +6,7 @@ namespace SalePurchaseAccountant.Models.Accounts
 {
     public class MemberAccountModel:AccountModel
     {
-        public int MemberId { get; set; }
+        public string Sidc { get; set; }
+        public string CustomerCode { get; set; }
     }
 }

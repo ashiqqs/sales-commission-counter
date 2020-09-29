@@ -5,3 +5,12 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 .center{
     margin: 0 auto;
 }
+.card-header{
+    background: rgb(130, 237, 245) !important;
+}
+.card-body {
+    background: rgb(196, 239, 245) !important;
+}
+.card-footer {
+    background: rgb(130, 237, 245) !important;
+}

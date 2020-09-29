@@ -10,9 +10,9 @@ namespace SalePurchaseAccountant.Models
         string GetNewCode(UserType type);
         bool Add(Employee employee);
         bool Update(Employee employee);
-        List<Employee> Get(int id=-1);
         List<Employee> Get(string code=null);
-        bool Delete(int id);
+        List<Employee> Get(int thanaId);
+        bool Delete(string code);
         int Count(int memberType = -1);
     }
 }

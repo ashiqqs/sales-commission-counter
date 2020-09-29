@@ -16,7 +16,7 @@ namespace SalePurchaseAccountant.Models
         /// <param name="type">Default user type assigned Salesman</param>
         /// <param name="id"></param>
         /// <returns></returns>
-        double GetSalesAmount(UserType type = UserType.Salesman, string month=null, int id = -1);
+        double GetSalesAmount(UserType type = UserType.Salesman, string month=null, string code=null);
         /// <summary>
         /// 
         /// </summary>
@@ -24,6 +24,6 @@ namespace SalePurchaseAccountant.Models
         /// <param name="type">Default user type assigned Salesman</param>
         /// <param name="id"></param>
         /// <returns></returns>
-        double GetPurchaseAmount(string month, UserType type = UserType.Salesman, int id = -1);
+        double GetPurchaseAmount(UserType type = UserType.Salesman, string month=null, string code =null);
     }
 }

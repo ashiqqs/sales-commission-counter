@@ -16,26 +16,24 @@ namespace SalePurchaseAccountant.DAL
         {
             using (var con = ConnectionGetway.GetConnection())
             {
-                string query = $@"INSERT INTO tblSalesman (Code, Name, ReferenceId,JoiningDate,CompanyId, ThanaId, Email, Address, ContactNo)
-                                VALUES('{employee.Code}', '{employee.Name}',{employee.ReferenceId},'{employee.JoiningDate}',{employee.CompanyId},{employee.ThanaId},'{employee.Email}','{employee.Address}','{employee.ContactNo}')";
+                string query = $@"INSERT INTO tblSalesman (Code, Name, ReferenceCode,JoiningDate, ThanaId, Email, Address, ContactNo)
+                                VALUES('{employee.Code}', '{employee.Name}','{employee.ReferenceCode}','{employee.JoiningDate.Date}',{employee.ThanaId},'{employee.Email}','{employee.Address}','{employee.ContactNo}')";
                 return con.Execute(query) > 0;
             }
         }
-        public bool Delete(int id)
+        public bool Delete(string code)
         {
             using (var con = ConnectionGetway.GetConnection())
             {
-                string query = $"DELETE tblSalesman WHERE Id = {id}";
+                string query = $"DELETE tblSalesman WHERE Code = '{code}'";
                 return con.Execute(query) > 0;
             }
         }
-        public List<SalesmanModel> Get(int id = -1)
+        public List<SalesmanModel> Get(int thanaId)
         {
             using (var con = ConnectionGetway.GetConnection())
             {
-                string query = id == -1
-                    ? $"SELECT * FROM tblSalesman"
-                    : $"SELECT * FROM tblSalesman WHERE Id = {id}";
+                string query = $"SELECT * FROM tblSalesman WHERE ThanaId={thanaId}";
                 return con.Query<SalesmanModel>(query).ToList();
             }
         }
@@ -43,19 +41,27 @@ namespace SalePurchaseAccountant.DAL
         {
             using (var con = ConnectionGetway.GetConnection())
             {
-                string query = String.IsNullOrEmpty(code)
+                string query = code == null
                     ? $"SELECT * FROM tblSalesman"
-                    : $"SELECT * FROM tblSalesman WHERE Code = {code}";
+                    : $"SELECT * FROM tblSalesman WHERE Code = '{code}'";
                 return con.Query<SalesmanModel>(query).ToList();
             }
         }
-        public List<SalesmanModel> GetAssociates(int referenceId, int designation = -1)
+        public List<SalesmanModel> Get(Designation designation)
+        {
+            using (var con = ConnectionGetway.GetConnection())
+            {
+                string query = $"SELECT * FROM tblSalesman WHERE Designation = {designation}";
+                return con.Query<SalesmanModel>(query).ToList();
+            }
+        }
+        public List<SalesmanModel> GetAssociates(string referenceCode, int designation = -1)
         {
             using (var con = ConnectionGetway.GetConnection())
             {
                 string query = designation == -1
-                    ? $"SELECT * FROM tblSalesman WHERE ReferenceId={referenceId}"
-                    : $"SELECT * FROM tblSalesman WHERE ReferenceId={referenceId} AND Designation={designation}";
+                    ? $"SELECT * FROM tblSalesman WHERE ReferenceCode={referenceCode}"
+                    : $"SELECT * FROM tblSalesman WHERE ReferenceCode={referenceCode} AND Designation={designation}";
                 return con.Query<SalesmanModel>(query).ToList();
             }
         }
@@ -63,8 +69,8 @@ namespace SalePurchaseAccountant.DAL
         {
             using (var con = ConnectionGetway.GetConnection())
             {
-                string query = $@"UDATE tblSalesman SET Name='{employee.Name}', ReferenceId={employee.ReferenceId},JoiningDate='{employee.JoiningDate}',"
-                               + $"Designation={employee.Designaiton},CompanyId={employee.CompanyId},ThanaId={employee.ThanaId}, Email='{employee.Email}',"
+                string query = $@"UDATE tblSalesman SET Name='{employee.Name}', ReferenceCode={employee.ReferenceCode},JoiningDate='{employee.JoiningDate.Date}',"
+                               + $"Designation={employee.Designaiton},ThanaId={employee.ThanaId}, Email='{employee.Email}',"
                                + $"Address='{employee.Address}', ContactNo='{employee.ContactNo}' WHERE Id = {employee.Id}";
                 return con.Execute(query) > 0;
             }
@@ -74,7 +80,9 @@ namespace SalePurchaseAccountant.DAL
         {
             using (var con = ConnectionGetway.GetConnection())
             {
-                string query = $"INSERT INTO tblSalesmanAccounts (SalesmanId,Amount) VALUES ({salesmanAcc.SalesmanId},{salesmanAcc.Amount * -1})";
+                string query = $"INSERT INTO tblAccounts (Code,Amount) " +
+                           $"VALUES ({salesmanAcc.Code},{salesmanAcc.Amount * -1})," +
+                           $" VALUES ({salesmanAcc.VendorCode},{salesmanAcc.Amount * 1})";
                 return con.Execute(query) > 0;
             }
         }
@@ -82,7 +90,7 @@ namespace SalePurchaseAccountant.DAL
         {
             using (var con = ConnectionGetway.GetConnection())
             {
-                string query = $"INSERT INTO tblSalesmanAccounts (SalesmanId,Amount) VALUES ({salesmanAcc.SalesmanId},{salesmanAcc.Amount})";
+                string query = $"INSERT INTO tblAccounts (Code,Amount) VALUES ({salesmanAcc.Code},{salesmanAcc.Amount})";
                 return con.Execute(query) > 0;
             }
         }
@@ -102,58 +110,61 @@ namespace SalePurchaseAccountant.DAL
             using (var con = ConnectionGetway.GetConnection())
             {
                 string query = designation == -1
-                    ? "SELECT Count(Id) FROM tblSalesman"
-                    : $"SELECT Count(Id) FROM tblSalesman WHERE Designation={designation}";
+                    ? "SELECT Count(Code) FROM tblSalesman"
+                    : $"SELECT Count(Code) FROM tblSalesman WHERE Designation={designation}";
                 int count = con.ExecuteScalar<int>(query);
                 return count;
             }
         }
-        public Dictionary<Designation, int> CountAssociates(int id)
+        public Dictionary<Designation, int> CountAssociates(string code = null)
         {
             Dictionary<Designation, int> associates = new Dictionary<Designation, int>();
 
             using (var con = ConnectionGetway.GetConnection())
             {
+                string query = code == null
+                        ? $"SELECT COUNT(Code) FROM tblSalesman WHERE Designation="
+                        : $"SELECT COUNT(Code) FROM tblSalesman WHERE ReferenceCode={code} AND Designation=";
+
                 for (int i = 1; i <= 11; i++)
                 {
-                    string query = $"SELECT COUNT(Id) FROM tblSalesman WHERE ReferenceId={id} AND Designation={i}";
-                    int count = con.ExecuteScalar<int>(query);
+                    int count = con.ExecuteScalar<int>(query + i);
                     associates.Add((Designation)i, count);
                 }
                 return associates;
             }
         }
-        
-        public double GetSalesAmount(UserType type = UserType.Salesman, string month=null, int id = -1)
+
+        public double GetSalesAmount(UserType type = UserType.Salesman, string month = null, string code = null)
         {
             month = month ?? DateTime.Now.ToString("yyyyMM");
             using (var con = ConnectionGetway.GetConnection())
             {
-                string query = id != -1
-                    ? $"SELECT SUM(Amount) FROM tblSalesmanAccounts WHERE CONVERT(VARCHAR(6),OperationDate,112)='{month}' AND Amount>0 AND Id={id}"
-                    : $"SELECT SUM(Amount) FROM tblSalesmanAccounts WHERE CONVERT(VARCHAR(6),OperationDate,112)='{month}' AND Amount>0";
+                string query = code == null
+                    ? $"SELECT SUM(Amount) FROM tblAccounts WHERE CONVERT(VARCHAR(6),OperationDate,112)='{month}' AND Amount>0 AND Code={code}"
+                    : $"SELECT SUM(Amount) FROM tblAccounts WHERE CONVERT(VARCHAR(6),OperationDate,112)='{month}' AND Amount>0";
                 double amount = con.ExecuteScalar<double>(query);
                 return amount;
             }
         }
-        public double GetAssociatesSalesAmount(int referenceId, string month = null)
+        public double GetAssociatesSalesAmount(string referenceCode, string month = null)
         {
             month = month ?? DateTime.Now.ToString("yyyyMM");
             string query;
             using (var con = ConnectionGetway.GetConnection())
-            {  
-                query = $"SELECT SUM(Amount) FROM tblSalesmanAccounts WHERE CONVERT(VARCHAR(6),OperationDate,112)='{month}' AND Amount>0 AND ReferenceId={referenceId}";
+            {
+                query = $"SELECT SUM(Amount) FROM tblAccounts WHERE CONVERT(VARCHAR(6),OperationDate,112)='{month}' AND Amount>0 AND ReferenceCode={referenceCode}";
                 double associatesAmount = con.ExecuteScalar<double>(query);
                 return associatesAmount;
             }
         }
-        public double GetPurchaseAmount(string month, UserType type = UserType.Salesman, int id = -1)
+        public double GetPurchaseAmount(UserType type = UserType.Salesman, string month = null, string code = null)
         {
             using (var con = ConnectionGetway.GetConnection())
             {
-                string query = id != -1
-                    ? $"SELECT SUM(Amount)*-1 FROM tblSalesmanAccounts WHERE CONVERT(VARCHAR(6),OperationDate,112)='{month}' AND Amount<0 AND Id={id}"
-                    : $"SELECT SUM(Amount)*-1 FROM tblSalesmanAccounts WHERE CONVERT(VARCHAR(6),OperationDate,112)='{month}' AND Amount<0";
+                string query = code == null
+                    ? $"SELECT SUM(Amount)*-1 FROM tblAccounts WHERE CONVERT(VARCHAR(6),OperationDate,112)='{month}' AND Amount<0 AND Code={code}"
+                    : $"SELECT SUM(Amount)*-1 FROM tblAccounts WHERE CONVERT(VARCHAR(6),OperationDate,112)='{month}' AND Amount<0";
                 double amount = con.ExecuteScalar<double>(query);
                 return amount;
             }

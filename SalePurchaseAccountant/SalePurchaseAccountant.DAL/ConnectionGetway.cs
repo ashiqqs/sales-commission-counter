@@ -20,7 +20,7 @@ namespace SalePurchaseAccountant.DAL
         }
         public static SqlConnection GetConnection()
         {
-            _sqlConnection = _sqlConnection ?? new SqlConnection(_connectionString);
+            _sqlConnection = new SqlConnection(_connectionString);
             return _sqlConnection;
         }
     }
