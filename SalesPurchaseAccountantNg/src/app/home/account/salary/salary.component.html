@@ -1,3 +1,17 @@
-<p>
-  salary works!
-</p>
+<div class="card">
+  <div class="card-header py-2">
+    <h4 class="text-center">Process Salary</h4>
+  </div>
+  <div class="card-body">
+    <div class="row">
+      <div class="m-auto py-5 my-5">
+        <button (click)="process()" class="btn btn-success">Process</button>
+        <div *ngIf="isProcessing">
+          <img src="../../../../assets/images/process2.gif" height="100" width="100"><b> Processing... Please wait</b>
+        </div>
+      </div>
+    </div>
+      <h5 *ngIf="isProcessed && isSuccess && !isProcessing" class="display-5 text-center text-success py-2">Salary Processed Successfully</h5>
+      <h5 *ngIf="isProcessed && !isSuccess && !isProcessing" class="display-5 text-center text-danger py-2">Salary Processed Failed</h5>
+  </div>
+</div>

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SalePurchaseAccountant.BLL;
+using SalePurchaseAccountant.Models.Helpers;
 
 namespace SalePurchaseAccountant.Api.Controller
 {
@@ -34,6 +35,10 @@ namespace SalePurchaseAccountant.Api.Controller
                     return Ok(new { status = false, result = "Operation failed to process salary." });
                 }
             }
+            catch(InvalidException ex)
+            {
+                return Ok(new { status = false, result = ex.Message });
+            }
             catch(Exception ex)
             {
                 return BadRequest(ex.Message);
@@ -56,7 +61,11 @@ namespace SalePurchaseAccountant.Api.Controller
                     return NotFound(new { status = false, result = "Salary not processed yet." });
                 }
             }
-            catch(Exception ex)
+            catch (InvalidException ex)
+            {
+                return Ok(new { status = false, result = ex.Message });
+            }
+            catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }

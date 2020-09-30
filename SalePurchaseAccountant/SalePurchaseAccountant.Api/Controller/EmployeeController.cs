@@ -23,7 +23,7 @@ namespace SalePurchaseAccountant.Api.Controller
 
         [HttpGet]
         [Route("get/newCode/{type}")]
-        public IActionResult GetNewSalesmanCode(UserType type)
+        public IActionResult GetNewCode(UserType type)
         {
             try
             {
@@ -37,6 +37,7 @@ namespace SalePurchaseAccountant.Api.Controller
                     return NotFound(new { status = false, result = "Failed to generate new code." });
                 }
             }
+            catch (InvalidException err) { return Ok(new { status = false, result = err.Message }); }
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
@@ -57,12 +58,17 @@ namespace SalePurchaseAccountant.Api.Controller
                 {
                     return Ok(new { status = false, result = "Failed to save the salesman." });
                 }
-            }catch(Exception err)
+            }
+            catch (InvalidException err)
+            {
+                return Ok(new { status = false, result = err.Message });
+            }
+            catch (Exception err)
             {
                 return BadRequest(err.Message);
             }
         }
-        
+
         [HttpGet]
         [Route("salesman/get/{code}")]
         public IActionResult GetSalesman(string code)
@@ -79,7 +85,7 @@ namespace SalePurchaseAccountant.Api.Controller
                     return NotFound(new { status = false, result = "No salesman found" });
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
@@ -94,6 +100,7 @@ namespace SalePurchaseAccountant.Api.Controller
                 var currentMonthPurchase = _employee.PurchaseBySalesman(accountModel);
                 return Ok(new { status = true, result = currentMonthPurchase });
             }
+            catch (InvalidException err) { return Ok(new { status = false, result = err.Message }); }
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
@@ -109,7 +116,7 @@ namespace SalePurchaseAccountant.Api.Controller
                 var currentMonthSale = _employee.SaleBySalesman(accountModel);
                 return Ok(new { status = true, result = currentMonthSale });
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
@@ -123,12 +130,16 @@ namespace SalePurchaseAccountant.Api.Controller
             {
                 if (_employee.SaveOrUpdateMember(member))
                 {
-                    return Ok(new { status = true, message = "Member Saved Successfully." });
+                    return Ok(new { status = true, result = "Member Saved Successfully." });
                 }
                 else
                 {
-                    return Ok(new { status = false, message = "Failed to save the Member." });
+                    return Ok(new { status = false, result = "Failed to save the Member." });
                 }
+            }
+            catch (InvalidException err)
+            {
+                return Ok(new { status = false, result = err.Message });
             }
             catch (Exception err)
             {
@@ -152,12 +163,13 @@ namespace SalePurchaseAccountant.Api.Controller
                     return NotFound(new { status = false, result = "No member found" });
                 }
             }
+            catch (InvalidException err) { return Ok(new { status = false, result = err.Message }); }
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
         }
-        
+
         [HttpPost]
         [Route("member/purchase")]
         public IActionResult MemberPurchase(MemberAccountModel accountModel)
@@ -167,6 +179,7 @@ namespace SalePurchaseAccountant.Api.Controller
                 var currentMonthPurchase = _employee.PurchaseByMember(accountModel);
                 return Ok(new { status = true, result = currentMonthPurchase });
             }
+            catch (InvalidException err) { return Ok(new { status = false, result = err.Message }); }
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
@@ -182,6 +195,23 @@ namespace SalePurchaseAccountant.Api.Controller
                 var currentMonthSale = _employee.SaleByMember(accountModel);
                 return Ok(new { status = true, result = currentMonthSale });
             }
+            catch (InvalidException err) { return Ok(new { status = false, result = err.Message }); }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet]
+        [Route("count/{type}")]
+        public IActionResult Count(UserType type)
+        {
+            try
+            {
+                var count = _employee.Count(type);
+                return Ok(new { status = true, result = count });
+            }
+            catch (InvalidException err) { return Ok(new { status = false, result = err.Message }); }
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);

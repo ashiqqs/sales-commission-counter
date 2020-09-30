@@ -114,8 +114,12 @@ namespace SalePurchaseAccountant.BLL
                 {
                     throw new InvalidException("Alpha member already in selected thana");
                 }
-                MemberModel existSalesman = _member.Get(member.Code).FirstOrDefault();
-                if (existSalesman == null)
+                if (GetMemberBySidc(member.Sidc) != null)
+                {
+                    throw new InvalidException("Selected SIDC already have a member code");
+                }
+                MemberModel existMember = _member.Get(member.Code).FirstOrDefault();
+                if (existMember == null)
                 {
                     return _member.Add(member);
                 }
@@ -132,6 +136,10 @@ namespace SalePurchaseAccountant.BLL
         public List<MemberModel> GetMember(string code = null)
         {
             return _member.Get(code);
+        }
+        public MemberModel GetMemberBySidc(string sidc)
+        {
+            return new MemberGetway().GetMembershipInfo(sidc);
         }
         public List<MemberModel> GetMemberByThana(int thanaId)
         {
@@ -189,10 +197,20 @@ namespace SalePurchaseAccountant.BLL
                 case UserType.Salesman:
                     return _salesmanAcc.GetSalesAmount(type, month, code);
                 default:
-                    return 0;
+                    return _memberAcc.GetSalesAmount(UserType.AlphaMember, month) + _memberAcc.GetSalesAmount(UserType.BetaMember, month); ;
             }
         }
-        
+        public int Count(UserType type = UserType.Salesman)
+        {
+            if (type == UserType.Salesman)
+            {
+                return _salesman.Count();
+            }
+            else
+            {
+                return _member.Count((int)type);
+            }
+        }
         #endregion
     }
 }

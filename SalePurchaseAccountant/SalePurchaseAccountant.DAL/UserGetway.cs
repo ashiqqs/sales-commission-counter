@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using SalePurchaseAccountant.Models;
+using SalePurchaseAccountant.Models.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
@@ -18,12 +19,12 @@ namespace SalePurchaseAccountant.DAL
                 return con.Execute(query)>0;
             }
         }
-        public UserModel Get(string userName, string password)
+        public UserViewModel Get(string userName, string password)
         {
             using(var con = ConnectionGetway.GetConnection())
             {
                 string query = $"SELECT * FROM tblUsers WHERE Name='{userName}' AND Password='{password}'";
-                return con.Query<UserModel>(query).FirstOrDefault();
+                return con.Query<UserViewModel>(query).FirstOrDefault();
             }
         }
         public UserModel Get(int id)

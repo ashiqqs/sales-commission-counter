@@ -1,9 +1,7 @@
 <header>
   <nav class="navbar navbar-expand-lg navbar-light bg-info">
-    <a class="navbar-brand">
-      <div class="ml-5" (click)="onClickLogo()" checked>
-        <img height="50px" width="150px" src="../../../../assets/images/logo.png"/>
-      </div>
+    <a class=" text-white">
+      {{user.code}} | CurrentPurchase: <b class="badge badge-pill badge-danger px-2">{{user.purchaseAmount | number:'1.2-2'}}</b> | CurrentSale: <b class="badge badge-pill badge-success px-2">{{user.salesAmount | number:'1.2-2'}}</b>
     </a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
       aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -12,13 +10,14 @@
 
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav ml-auto">
-        <button color="primary" routerLink="/" mat-flat-button>Home</button>
-        <button color="primary" routerLink="/" mat-flat-button>Purchase</button>
-        <button color="primary" routerLink="/" mat-flat-button>Sale</button>
-        <button color="primary" routerLink="/" mat-flat-button>Reports</button>
-        <button color="primary" routerLink="/" mat-flat-button>Add Associate</button>
-        <button color="primary" routerLink="/" mat-flat-button>Be a Member</button>
-        <button routerLink="/layout2/login" mat-flat-button>Logout</button>
+        <button color="primary" routerLink="/startup" mat-flat-button>Home</button>
+        <button *ngIf="user.userType!=1" color="primary" routerLink="/account/sale-purchase" mat-flat-button>Transaction</button>
+        <button *ngIf="user.userType==1" color="primary" routerLink="/account/salary" mat-flat-button>Process Salary</button>
+        <button color="primary" routerLink="/account/report" mat-flat-button>Reports</button>
+        <button *ngIf="user.userType==1 || user.userType==4" color="primary" [routerLink]="['/employee/create',{userType:4}]" mat-flat-button>New Salesman</button>
+        <button *ngIf="user.userType==1" color="primary" [routerLink]="['/employee/create',{userType:2}]" mat-flat-button>New Alpha Member</button>
+        <button *ngIf="user.userType==1" color="primary" [routerLink]="['/employee/create',{userType:3}]" mat-flat-button>New Beta Member</button>
+        <button (click)="logout()" mat-flat-button>Logout</button>
       </ul>
       </div>
   </nav>

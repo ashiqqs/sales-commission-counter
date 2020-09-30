@@ -19,11 +19,15 @@ export class EmployeeService {
   getSalesman(code:string=null){
     return this.http.get(environment.apiUrl+`employee/salesman/get/${code}`);
   }
-  purchaseBySalesman(account){
-    return this.http.post(environment.apiUrl+`employee/salesman/purchase`, account);
-  }
-  saleBySalesman(account){
-    return this.http.post(environment.apiUrl+`employee/salesman/sale`, account);
+  // purchaseBySalesman(account){
+  //   return this.http.post(environment.apiUrl+`employee/salesman/purchase`, account);
+  // }
+  transactionBySalesman(account){
+    if(account.type==1){
+      return this.http.post(environment.apiUrl+`employee/salesman/purchase`, account);
+    }else{
+      return this.http.post(environment.apiUrl+`employee/salesman/sale`, account);
+    }
   }
 
   saveMember(member){
@@ -32,10 +36,17 @@ export class EmployeeService {
   getMember(code:string=null){
     return this.http.get(environment.apiUrl+`employee/member/get/${code}`);
   }
-  purchaseByMember(account){
-    return this.http.post(environment.apiUrl+`employee/member/purchase`, account);
+  transactionByMember(account){
+    if(account.type==1){
+      return this.http.post(environment.apiUrl+`employee/member/purchase`, account);
+    }else{
+      return this.http.post(environment.apiUrl+`employee/member/sale`, account);
+    }
   }
-  saleByMember(account){
-    return this.http.post(environment.apiUrl+`employee/member/sale`, account);
+  // saleByMember(account){
+  //   return this.http.post(environment.apiUrl+`employee/member/sale`, account);
+  // }
+  count(type:UserType = UserType.Salesman){
+    return this.http.get(environment.apiUrl+`employee/count/${type}`);
   }
 }

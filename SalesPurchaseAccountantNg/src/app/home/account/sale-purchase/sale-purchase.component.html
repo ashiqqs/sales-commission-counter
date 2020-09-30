@@ -1,3 +1,52 @@
-<p>
-  sale-purchase works!
-</p>
+<div class="card">
+  <div class="card-header py-2">
+    <h4 class="text-center">Transaction</h4>
+  </div>
+  <div class="card-body">
+    <div class="row">
+      <div class="col-md-6 m-auto">
+        <form [formGroup]="transactionForm">
+          <div class="form-group row">
+            <label for="type" class="col-md-5">Transaction Type <span class="text-danger">*</span></label>
+            <div class="col-md-7">
+              <select formControlName="type" class="form-control">
+                <option [value]="0">--Select Transaction Type---</option>
+                <option [value]="1">Purchase</option>
+                <option [value]="2">Sale</option>
+              </select>
+            </div>
+          </div>
+          <div *ngIf="user.userType==4 && formVal.type==1" class="form-group row">
+            <label for="vendorCode" class="col-md-5">Vendor</label>
+            <div class="col-md-7">
+              <select formControlName="vendorCode" id="vendorCode" class="form-control">
+                <option [value]="0">--Select Vendor---</option>
+                <option *ngFor="let vendor of vendors" [value]="vendor.sidc">{{vendor.code}} {{vendor.name}}</option>
+              </select>
+            </div>
+          </div>
+          <div *ngIf="(user.userType==2 || user.userType==3) && formVal.type==2" class="form-group row">
+            <label for="customerCode" class="col-md-5">Customer</label>
+            <div class="col-md-7">
+              <select formControlName="customerCode" id="customerCode" class="form-control">
+                <option [value]="0">--Select Customer---</option>
+                <option *ngFor="let customer of customers" [value]="customer.code">{{customer.code}} {{customer.name}}</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="amount" class="col-md-5">Amount <span class="text-danger">*</span></label>
+            <div class="col-md-7">
+              <input formControlName="amount" type="number" id="amount" class="form-control" placeholder="0.00">
+            </div>
+          </div>
+          <div class="row">
+            <div class="ml-auto mr-3">
+              <button (click)="onSubmit()" class="btn btn-success">Submit</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

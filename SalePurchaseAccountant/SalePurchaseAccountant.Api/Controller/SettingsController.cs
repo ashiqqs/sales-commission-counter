@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SalePurchaseAccountant.BLL;
+using SalePurchaseAccountant.Models.Helpers;
 
 namespace SalePurchaseAccountant.Api.Controller
 {
@@ -34,6 +35,7 @@ namespace SalePurchaseAccountant.Api.Controller
                     return Ok(new { status = false, result = "No district found." });
                 }
             }
+            catch (InvalidException err) { return Ok(new { status = false, result = err.Message }); }
             catch (Exception err)
             {
                 return BadRequest(err.Message);
@@ -55,7 +57,7 @@ namespace SalePurchaseAccountant.Api.Controller
                     return Ok(new { status = false, result = thana });
                 }
             }
-            catch (Exception err)
+            catch (InvalidException err) { return Ok(new { status = false, result = err.Message }); }catch (Exception err)
             {
                 return BadRequest(err.Message);
             }

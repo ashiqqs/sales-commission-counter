@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { UserModel } from 'src/app/models/user-model';
+import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
   selector: 'app-startup',
@@ -8,10 +10,10 @@ import { Router } from '@angular/router';
 })
 export class StartupComponent implements OnInit {
 
-  userType;
+  user:UserModel;
   constructor(private router:Router){
-    this.userType = sessionStorage.getItem('userType');
-    if(this.userType){
+    this.user = AuthService.getLoggedUser();
+    if(this.user.userType){
       this.router.navigate[('/')]
     }
     else{

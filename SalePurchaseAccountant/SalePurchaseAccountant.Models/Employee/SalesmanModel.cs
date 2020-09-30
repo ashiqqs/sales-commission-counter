@@ -8,7 +8,7 @@ namespace SalePurchaseAccountant.Models.Employee
     public class SalesmanModel:EmployeeModel
     {
         public string ReferenceCode { get; set; }
-        public  Designation Designaiton { get; set; }
+        public  Designation Designation { get; set; }
         public bool IsAlphaMember { get; set; }
         public bool IsBetaMember { get; set; }
 

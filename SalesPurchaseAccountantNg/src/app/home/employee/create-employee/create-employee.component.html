@@ -4,25 +4,35 @@
   </div>
   <div class="card-body">
     <div class="row">
-      <div class="col-md-9 m-auto">
+      <div class="col-md-6 m-auto">
         <form [formGroup]="employeeForm">
-          <div class="form-group row">
+          <div *ngIf="employeeType==4" class="form-group row">
             <label for="referenceCode" class="col-md-3">Reference</label>
             <div class="col-md-9">
-              <input formControlName="referenceCode" type="text" class="form-control" id="referenceCode"
+              <input formControlName="referenceCode" readonly type="text" class="form-control" id="referenceCode"
                 placeholder="Reference">
+            </div>
+          </div>
+          <div *ngIf="employeeType==2 || employeeType==3" class="form-group row">
+            <label for="sidc" class="col-md-3">SIDC <span class="text-danger">*</span></label>
+            <div class="col-md-9">
+              <select formControlName="sidc"
+                id="sidc" class="form-control" placeholder="Select SIDC">
+                <option value="0">---Select SIDC---</option>
+                <option *ngFor="let sidc of salesman" [value]="sidc.code">{{sidc.code}} {{sidc.name}}</option>
+              </select>
             </div>
           </div>
           <div class="form-group row">
             <label for="code" class="col-md-3">Code</label>
             <div class="col-md-9">
-              <input formControlName="code" type="text" class="form-control" id="code" placeholder="Code">
+              <input formControlName="code" type="text" readonly class="form-control" id="code" placeholder="Code">
             </div>
           </div>
           <div class="form-group row">
             <label for="name" class="col-md-3">Name</label>
             <div class="col-md-9">
-              <input formControlName="name" type="text" class="form-control" id="name" placeholder="Code">
+              <input formControlName="name" type="text" class="form-control" id="name" placeholder="Employee Name">
             </div>
           </div>
           <div class="form-group row">
@@ -30,14 +40,16 @@
             <div class="col-md-9">
               <select formControlName="districtId" (change)="getThanaByDistrict(this.formVal.districtId)"
                 id="districtId" class="form-control" placeholder="Select District">
+                <option value="0">---Select District---</option>
                 <option *ngFor="let district of districts" [value]="district.id">{{district.name}}</option>
               </select>
             </div>
           </div>
           <div class="form-group row">
-            <label for="thanaId" class="col-md-3">Thana</label>
+            <label for="thanaId" class="col-md-3">Thana <span class="text-danger">*</span></label>
             <div class="col-md-9">
               <select formControlName="thanaId" id="thanaId" class="form-control" placeholder="Select Thana">
+                <option value="0">---Select Thana---</option>
                 <option *ngFor="let t of thana" [value]="t.id">{{t.name}}</option>
               </select>
             </div>
@@ -53,21 +65,21 @@
             <label for="email" class="col-md-3">Email</label>
             <div class="col-md-9">
               <input formControlName="email" type="email" class="form-control" id="email"
-                placeholder="Enter your email">
+                placeholder="Enter email">
             </div>
           </div>
           <div class="form-group row">
-            <label for="contactNo" class="col-md-3">Contact No</label>
+            <label for="contactNo" class="col-md-3">Contact No <span class="text-danger">*</span></label>
             <div class="col-md-9">
               <input formControlName="contactNo" type="text" class="form-control" id="contactNo"
-                placeholder="Enter your Contact No.">
+                placeholder="Enter Contact No.">
             </div>
           </div>
           <div class="form-group row">
             <label for="address" class="col-md-3">Address</label>
             <div class="col-md-9">
               <input formControlName="address" type="text" class="form-control" id="address"
-                placeholder="Enter your Address">
+                placeholder="Enter Address">
             </div>
           </div>
         </form>
@@ -76,7 +88,7 @@
   </div>
   <div class="card-footer">
     <div class="row">
-      <div class="ml-auto">
+      <div class="m-auto">
         <button (click)="createForm()" class="btn btn-info mr-1">Reset</button>
         <button (click)="onSubmit()" class="btn btn-success mr-3">Save</button>
       </div>

@@ -7,6 +7,10 @@ namespace SalePurchaseAccountant.Models.ViewModels
 {
     public class SalesmanViewModel:EmployeeModel
     {
+        public SalesmanViewModel()
+        {
+            Membership = new MemberModel();
+        }
         public int DesignationId { get; set; }
         public bool IsAlphaMember { get; set; }
         public bool IsBetaMember { get; set; }
@@ -14,7 +18,7 @@ namespace SalePurchaseAccountant.Models.ViewModels
         public SalesmanViewModel Reference { get; set; }
         public List<SalesmanViewModel> Associates { get; set; }
         public double TotalSales { get; set; }
-        public double TotalPuchase { get; set; }
+        public double TotalPurchase { get; set; }
         public double SalesCommision { get; set; }
         public double OrdinalCommision { get; set; }
         public double InboundCommision { get; set; }

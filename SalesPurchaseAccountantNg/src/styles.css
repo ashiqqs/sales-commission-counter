@@ -14,3 +14,24 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 .card-footer {
     background: rgb(130, 237, 245) !important;
 }
+#toast-container > div {
+    opacity: 1;
+    z-index: 999;
+  }
+  .toast {
+    font-size: initial !important;
+    border: initial !important;
+    backdrop-filter: blur(0) !important;
+  }
+  .toast-success {
+    background-color: #41a03e !important;
+  }
+  .toast-error {
+    background-color: #fa4138 !important;
+  }
+  .toast-info {
+    background-color: #2F96B4 !important;
+  }
+  .toast-warning {
+    background-color: #F89406 !important;
+  }

@@ -7,7 +7,7 @@ namespace SalePurchaseAccountant.Models.Accounts
 {
     public abstract class AccountModel
     {
-        public int Id { get; set; }
+        public int? Id { get; set; }
         public string Code { get; set; }
         public DateTime? OperationDate { get; set; }
         public double Amount { get; set; }

@@ -1,5 +1,5 @@
 <div class="row" style="height: 500px;">
-    <div class="col-md-9 m-auto" id="loginForm">
+    <div class="col-md-5 m-auto" id="loginForm">
         <div class="card">
             <div class="card-header">
                 <h3 class="text-center">User Login</h3>
@@ -7,25 +7,28 @@
             <div class="card-body">
                 <form>
                     <div class="form-group row">
+                        <p *ngIf="errMsg" class="text-danger text-center col-12">{{errMsg}}</p>
+                    </div>
+                    <div class="form-group row">
                         <label for="userName" class="col-md-3">User Name</label>
                         <div class="col-md-9">
-                            <input type="text" class="form-control" placeholder="User Name">
+                            <input [(ngModel)]="user.name"  name="name" type="text" required class="form-control" placeholder="User Name">
                         </div>
                     </div>
                     <div class="form-group row">
                         <label for="userName" class="col-md-3">Password</label>
                         <div class="col-md-9">
-                            <input type="password" class="form-control" placeholder="Password">
+                            <input [(ngModel)]="user.password"  name="password" type="password" required class="form-control" placeholder="Password">
                         </div>
                     </div>
                     <div class="row">
-                        <button routerLink="/startup" class="btn btn-primary ml-auto mr-3">Login</button>
+                        <button (click)="login()" class="btn btn-primary ml-auto mr-3">Login</button>
                     </div>
                 </form>
             </div>
             <div class="card-footer">
-                <div class="row">
-                    <button routerLink="/user/register" class="btn btn-success btn-lg m-auto">Create Company</button>
+                <div *ngIf="!hasCompany" class="row">
+                    <button [routerLink]="['/user/register',{userType:4}]" class="btn btn-success btn-lg m-auto">Create Company</button>
                 </div>
             </div>
         </div>

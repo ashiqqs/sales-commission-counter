@@ -25,7 +25,7 @@ namespace SalePurchaseAccountant.BLL
                 return false;
             }
             double associatesSale = _salesman.GetAssociatesSalesAmount(referenceCode: salesman.ReferenceCode);
-            switch (salesman.Designaiton)
+            switch (salesman.Designation)
             {
                 case Designation.C:{
                         return associatesSale >= 16000;

@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { ToastrService } from 'ngx-toastr';
+import { AccountService } from 'src/app/services/account.service';
 
 @Component({
   selector: 'app-report',
@@ -7,9 +9,48 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ReportComponent implements OnInit {
 
-  constructor() { }
+  code: string;
+  salaries: any[] = [];
+  totalSalary: any;
+  constructor(
+    private accountService: AccountService,
+    private toasterService: ToastrService
+  ) { }
 
   ngOnInit() {
   }
 
+  getSalary() {
+    if (!this.code) {
+      this.toasterService.error('Code is required', 'Invalid Submission');
+      return;
+    }
+    this.accountService.getSalary(this.code).subscribe((response: any) => {
+      if (response.status) {
+        this.salaries = response.result as any[];
+        this.totalSalary = {
+          salesCommission: 0,
+          ordinalCommission: 0,
+          inboundCommission: 0,
+          outboundCommission: 0,
+          gbCommission: 0,
+          total: 0
+        }
+        this.salaries.forEach(s => {
+          this.totalSalary.salesCommission += Number(s.salesCommission);
+          this.totalSalary.ordinalCommission += Number(s.ordinalCommission);
+          this.totalSalary.inboundCommission += Number(s.inboundCommission);
+          this.totalSalary.outboundCommission += Number(s.outboundCommission);
+          this.totalSalary.gbCommission += Number(s.gbCommission);
+          this.totalSalary.total += Number(s.total);
+        })
+      } else {
+        this.salaries = [];
+        this.toasterService.error('Salary not processed yet.', 'Not found')
+      }
+    }, err => {
+      this.salaries = [];
+      console.error(err)
+    })
+  }
 }
