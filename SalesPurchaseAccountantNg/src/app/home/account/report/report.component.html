@@ -3,7 +3,7 @@
     <h4 class="text-center">Salary Report</h4>
   </div>
   <div class="card-body">
-    <div class="row">
+    <div  *ngIf="user.userType==1" class="row">
       <div class="col-md-5 m-auto">
         <div class="form-group row">
           <label for="code" class="col-md-4">Code <span class="text-danger">*</span></label>

@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
+import { UserModel } from 'src/app/models/user-model';
 import { AccountService } from 'src/app/services/account.service';
+import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
   selector: 'app-report',
@@ -9,6 +11,7 @@ import { AccountService } from 'src/app/services/account.service';
 })
 export class ReportComponent implements OnInit {
 
+  user:UserModel;
   code: string;
   salaries: any[] = [];
   totalSalary: any;
@@ -18,6 +21,9 @@ export class ReportComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.user = AuthService.getLoggedUser();
+    this.code = this.user.code;
+    this.getSalary();
   }
 
   getSalary() {
