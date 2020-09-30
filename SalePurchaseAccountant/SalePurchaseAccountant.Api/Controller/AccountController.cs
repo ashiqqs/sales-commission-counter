@@ -35,11 +35,11 @@ namespace SalePurchaseAccountant.Api.Controller
                     return Ok(new { status = false, result = "Operation failed to process salary." });
                 }
             }
-            catch(InvalidException ex)
+            catch (InvalidException ex)
             {
                 return Ok(new { status = false, result = ex.Message });
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
@@ -70,5 +70,7 @@ namespace SalePurchaseAccountant.Api.Controller
                 return BadRequest(ex.Message);
             }
         }
+
+
     }
 }
