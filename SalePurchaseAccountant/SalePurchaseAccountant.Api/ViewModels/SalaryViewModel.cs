@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace SalePurchaseAccountant.Models.ViewModels
+namespace SalePurchaseAccountant.Api.ViewModels
 {
     public class SalaryViewModel
     {

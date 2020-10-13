@@ -7,12 +7,12 @@ namespace SalePurchaseAccountant.Models
 {
     public interface IEmployee<Employee>
     {
-        string GetNewCode(UserType type);
+        string GetNewCode(string companyCode,UserType type);
         bool Add(Employee employee);
         bool Update(Employee employee);
-        List<Employee> Get(string code=null);
-        List<Employee> Get(int thanaId);
-        bool Delete(string code);
-        int Count(int memberType = -1);
+        List<Employee> Get(string companyCode, string code=null);
+        List<Employee> Get(string companyCode, int thanaId);
+        bool Delete(int id);
+        int Count(string companyCode, int memberType = -1);
     }
 }

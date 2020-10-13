@@ -1,7 +1,6 @@
 ﻿using SalePurchaseAccountant.DAL;
 using SalePurchaseAccountant.Models.Employee;
 using SalePurchaseAccountant.Models.Helpers;
-using SalePurchaseAccountant.Models.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
@@ -49,9 +48,9 @@ namespace SalePurchaseAccountant.BLL
                 }
             }
         }
-        public List<SalaryViewModel> GetSalary(string code, string month)
+        public List<SalaryViewModel> GetSalary<SalaryViewModel>(string code, string month)
         {
-            return _salary.GetSalary(code, month);
+            return _salary.GetSalary<SalaryViewModel>(code, month);
         }
         private void ProcessSalesBoundGbCommission(SqlConnection con, SqlTransaction tran, List<SalesmanModel> salesmanList)
         {

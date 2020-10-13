@@ -13,5 +13,6 @@ namespace SalePurchaseAccountant.Models
         public string Password { get; set; }
         public UserType UserType { get; set; }
         public string Code { get; set; }
+        public string CompanyCode { get; set; }
     }
 }

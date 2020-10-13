@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using SalePurchaseAccountant.Models;
+using SalePurchaseAccountant.Models.BasicSettings;
 using SalePurchaseAccountant.Models.Helpers;
 using System;
 using System.Collections.Generic;
@@ -26,6 +27,34 @@ namespace SalePurchaseAccountant.DAL
                 return thana;
             }
         }
-        
+        public CompanyModel Registration(CompanyModel company)
+        {
+            using(var con = ConnectionGetway.GetConnection())
+            {
+                string query = $"INSERT INTO tblCompanies(Code, Name,Address) VALUES('{company.Code}', '{company.Name}',{company.Address}";
+                int rowAffect = con.Execute(query);
+                if (rowAffect > 0) { return company; }
+                else { return null; }
+            }
+        }
+        public CompanyModel GetCompany(string code)
+        {
+            using (var con = ConnectionGetway.GetConnection())
+            {
+                string query = $"SELECt * FROM tblCompanies WHERE Code = '{code}'";
+                var company = con.Query<CompanyModel>(query).FirstOrDefault();
+                return company;
+            }
+        }
+        public string GetNewCompanyCode()
+        {
+            using (var con = ConnectionGetway.GetConnection())
+            {
+                string query = "SELECT TOP 1 Code FROM tblCompanies ORDER BY Id DESC";
+                string code = con.ExecuteScalar<string>(query) ?? "C-000";
+                int.TryParse(code.Split('-')[1], out int codeNum);
+                return "C-" + ((codeNum + 1).ToString().PadLeft(3, '0'));
+            }
+        }
     }
 }

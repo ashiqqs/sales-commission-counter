@@ -1,6 +1,5 @@
 ﻿using Dapper;
 using SalePurchaseAccountant.Models;
-using SalePurchaseAccountant.Models.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
@@ -15,11 +14,11 @@ namespace SalePurchaseAccountant.DAL
         {
             using (var con = ConnectionGetway.GetConnection())
             {
-                string query = $"UPDATE tblUsers SET Password = '{user.Password}' WHERE Code = '{user.Code}'";
+                string query = $"UPDATE tblUsers SET Password = '{user.Password}' WHERE Code = '{user.Code}' AND CompanyCode='{user.CompanyCode}'";
                 return con.Execute(query)>0;
             }
         }
-        public UserViewModel Get(string userName, string password)
+        public UserViewModel Get<UserViewModel>(string userName, string password)
         {
             using(var con = ConnectionGetway.GetConnection())
             {

@@ -3,14 +3,22 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace SalePurchaseAccountant.Models.ViewModels
+namespace SalePurchaseAccountant.Api.ViewModels
 {
-    public class SalesmanViewModel:EmployeeModel
+    public class SalesmanViewModel
     {
         public SalesmanViewModel()
         {
             Membership = new MemberModel();
         }
+        public int? Id { get; set; }
+        public string Code { get; set; }
+        public string Name { get; set; }
+        public int ThanaId { get; set; }
+        public DateTime JoiningDate { get; set; }
+        public string Email { get; set; }
+        public string Address { get; set; }
+        public string ContactNo { get; set; }
         public int DesignationId { get; set; }
         public bool IsAlphaMember { get; set; }
         public bool IsBetaMember { get; set; }

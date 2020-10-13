@@ -15,4 +15,10 @@ export class SettingService {
   getDistrict(districtId:number=-1){
     return this.http.get(environment.apiUrl+`settings/district/${districtId}`);
   }
+  getNewCompanyCode(){
+    return this.http.get(environment.apiUrl+`settings/getNewCompanyCode`);
+  }
+  registration(company){
+    return this.http.post(environment.apiUrl+`settings/registration`,company);
+  }
 }

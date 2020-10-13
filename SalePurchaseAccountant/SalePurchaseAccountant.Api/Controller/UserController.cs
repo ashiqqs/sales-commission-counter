@@ -4,8 +4,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using SalePurchaseAccountant.Api.ViewModels;
 using SalePurchaseAccountant.BLL;
 using SalePurchaseAccountant.Models;
+using SalePurchaseAccountant.Models.Employee;
 using SalePurchaseAccountant.Models.Helpers;
 
 namespace SalePurchaseAccountant.Api.Controller
@@ -15,9 +17,12 @@ namespace SalePurchaseAccountant.Api.Controller
     public class UserController : ControllerBase
     {
         private readonly UserBll _user;
+        private readonly EmployeeBll _employee;
+        private readonly SettingsBll _settings;
         public UserController()
         {
             _user = new UserBll();
+            _employee = new EmployeeBll();
         }
         [HttpPost]
         [Route("login")]
@@ -25,7 +30,34 @@ namespace SalePurchaseAccountant.Api.Controller
         {
             try
             {
-                var loggedUser = _user.Login(user.Name, user.Password);
+                var loggedUser = _user.Login<UserViewModel>(user.Name, user.Password);
+                if (loggedUser == null || (loggedUser.Name != user.Name && user.Password != user.Password))
+                {
+                    throw new InvalidException("Incorrect username or password!");
+                }
+                loggedUser.PurchaseAmount = _employee.PurchaseAmount(DateTime.Now.ToString("yyyyMM"), user.UserType, user.Code);
+                loggedUser.SalesAmount = _employee.SalesAmount(DateTime.Now.ToString("yyyyMM"), user.UserType, user.Code);
+                if (loggedUser.UserType == UserType.AlphaMember || loggedUser.UserType == UserType.BetaMember)
+                {
+                    loggedUser.EmploymentInfo.Membership = _employee.GetMember(user.Code).FirstOrDefault() ?? new MemberModel();
+                    loggedUser.Company = _settings.GetCompany(loggedUser.EmploymentInfo.Membership.CompanyCode);
+                }
+                else if(loggedUser.UserType==UserType.Salesman)
+                {
+                    SalesmanModel emp = _employee.GetSalesman(user.Code).FirstOrDefault();
+                    loggedUser.EmploymentInfo.Id = emp.Id;
+                    loggedUser.EmploymentInfo.Code = emp.Code;
+                    loggedUser.EmploymentInfo.Name = emp.Name;
+                    loggedUser.EmploymentInfo.IsAlphaMember = emp.IsAlphaMember;
+                    loggedUser.EmploymentInfo.IsBetaMember = emp.IsBetaMember;
+                    loggedUser.EmploymentInfo.Membership = _employee.GetMemberBySidc(user.Code) ?? new MemberModel();
+                    loggedUser.Company = _settings.GetCompany(emp.CompanyCode);
+                }
+                else
+                {
+                    loggedUser.Company = _settings.GetCompany(loggedUser.Code);
+                }
+
                 return Ok(new { status = true, result = loggedUser });
             }
             catch (InvalidException err) 
