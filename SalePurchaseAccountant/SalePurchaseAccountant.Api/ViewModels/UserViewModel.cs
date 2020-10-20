@@ -22,6 +22,7 @@ namespace SalePurchaseAccountant.Api.ViewModels
         public double SalesAmount { get; set; }
         public double PurchaseAmount { get; set; }
         public SalesmanViewModel EmploymentInfo { get; set; }
+        public string CompanyCode { get; set; }
         public CompanyModel Company { get; set; }
 
     }

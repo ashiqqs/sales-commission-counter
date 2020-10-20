@@ -35,7 +35,7 @@ export class CreateEmployeeComponent implements OnInit {
     this.employeeType = this.activateRoute.snapshot.params['userType'] as number;
     this.createForm();
     this.getDistricts();
-    this.getNewCode(this.employeeType);
+    this.getNewCode(this.user.company.code, this.employeeType);
     this.getAllSalesman()
   }
   getDistricts() {
@@ -58,16 +58,15 @@ export class CreateEmployeeComponent implements OnInit {
         }
       })
   }
-  getNewCode(userType: UserType) {
-    
-    this.employeeService.getNewCode(userType).subscribe((response: any) => {
+  getNewCode(companyCode,userType: UserType) {
+    this.employeeService.getNewCode(companyCode,userType).subscribe((response: any) => {
       if (response.status) {
         this.employeeForm.patchValue({ code: response.result });
       }
     })
   }
   getAllSalesman() {
-    this.employeeService.getSalesman()
+    this.employeeService.getSalesman(this.user.company.code)
       .subscribe((response: any) => {
         if (response.status) {
           this.salesman = response.result as any[];
@@ -89,7 +88,6 @@ export class CreateEmployeeComponent implements OnInit {
         return;
       }
       paramObj.memberType = Number(this.formVal.memberType)
-      console.log(this.formVal)
       this.employeeService.saveMember(paramObj)
         .subscribe((response: any) => {
           if (response.status) {
@@ -130,6 +128,7 @@ export class CreateEmployeeComponent implements OnInit {
       isBetaMember: [false, []],
       memberType: [this.employeeType, []],
       sidc: [0, []],
+      companyCode:[this.user.company.code,[]]
     })
   }
 

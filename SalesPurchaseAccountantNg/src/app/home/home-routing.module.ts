@@ -10,6 +10,7 @@ import { ReportComponent } from './account/report/report.component';
 import { EmployeeDetailsComponent } from './employee/employee-details/employee-details.component';
 import { FullwidthLayoutComponent } from '../layouts/fullwidth-layout/fullwidth-layout.component';
 import { LoginComponent } from '../user/login/login.component';
+import { RegistrationComponent } from '../user/registration/registration.component';
 
 const routes:Routes = [
   {path: '', component: DefaultLayoutComponent, children:[
@@ -26,7 +27,7 @@ const routes:Routes = [
   ]},
   {path:'user', component:FullwidthLayoutComponent, children:[
     {path:'login', component:LoginComponent},
-    {path:'register', component:CreateEmployeeComponent}
+    {path:'register', component:RegistrationComponent}
   ]}
 ]
 

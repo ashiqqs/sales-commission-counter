@@ -1,3 +1,29 @@
-<p>
-  employee-details works!
-</p>
+<div class="card">
+  <h4 class="card-header text-center">Employees</h4>
+  <div class="card-body">
+    <div class="col-10 m-auto">
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>#SN</th>
+            <th>Code</th>
+            <th>Name</th>
+            <th>Designation</th>
+            <th>Type</th>
+            <th>Joining_Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let emp of employees;let i=index">
+            <td>{{i+1}}</td>
+            <td>{{emp.code}}</td>
+            <td>{{emp.name}}</td>
+            <td>{{emp.designation}}</td>
+            <td>{{emp.type}}</td>
+            <td>{{emp.joiningDate | date:'dd MMM,yyyy'}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

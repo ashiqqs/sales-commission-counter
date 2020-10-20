@@ -21,12 +21,12 @@ namespace SalePurchaseAccountant.Api.Controller
         }
 
         [HttpGet]
-        [Route("salary/process")]
-        public IActionResult ProcessSalary()
+        [Route("salary/process/{companyCode}/{month}")]
+        public IActionResult ProcessSalary(string companyCode, string month)
         {
             try
             {
-                bool isSuccess = _account.ProcessSalary();
+                bool isSuccess = _account.ProcessSalary(companyCode, month);
                 if (isSuccess)
                 {
                     return Ok(new { status = true, result = "Salary Processed Successfully" });
@@ -47,12 +47,12 @@ namespace SalePurchaseAccountant.Api.Controller
         }
 
         [HttpGet]
-        [Route("salary/get/{code}/{month}")]
-        public IActionResult GetSalary(string code, string month)
+        [Route("salary/get/{companyCode}/{code}/{month}")]
+        public IActionResult GetSalary(string companyCode,string code, string month)
         {
             try
             {
-                var salaries = _account.GetSalary<SalaryViewModel>(code, month);
+                var salaries = _account.GetSalary<SalaryViewModel>(companyCode,code, month);
                 if (salaries.Count > 0)
                 {
                     return Ok(new { status = true, result = salaries });

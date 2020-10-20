@@ -27,11 +27,8 @@ export class ReportComponent implements OnInit {
   }
 
   getSalary() {
-    if (!this.code) {
-      this.toasterService.error('Code is required', 'Invalid Submission');
-      return;
-    }
-    this.accountService.getSalary(this.code).subscribe((response: any) => {
+    const companyCode = (this.user.userType==1 && this.user.code==this.code)?null:this.user.company.code;
+    this.accountService.getSalary(companyCode, this.code).subscribe((response: any) => {
       if (response.status) {
         this.salaries = response.result as any[];
         this.totalSalary = {
@@ -52,6 +49,7 @@ export class ReportComponent implements OnInit {
         })
       } else {
         this.salaries = [];
+        this.totalSalary = null;
         this.toasterService.error('Salary not processed yet.', 'Not found')
       }
     }, err => {

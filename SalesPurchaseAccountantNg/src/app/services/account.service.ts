@@ -9,10 +9,10 @@ export class AccountService {
 
   constructor(private http:HttpClient) { }
 
-  processSalary(month=null){
-    return this.http.get(environment.apiUrl+`account/salary/process`);
+  processSalary(companyCode,month=null){
+    return this.http.get(environment.apiUrl+`account/salary/process/${companyCode}/${month}`);
   }
-  getSalary(code:string=null,month:string=null){
-    return this.http.get(environment.apiUrl+`account/salary/get/${code}/${month}`);
+  getSalary(companyCode,code:string=null,month:string=null){
+    return this.http.get(environment.apiUrl+`account/salary/get/${companyCode}/${code}/${month}`);
   }
 }

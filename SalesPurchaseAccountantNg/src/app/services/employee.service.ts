@@ -10,18 +10,15 @@ export class EmployeeService {
 
   constructor(private http:HttpClient) { }
 
-  getNewCode(type:UserType){
-    return this.http.get(environment.apiUrl+`employee/get/newCode/${type}`);
+  getNewCode(companyCode,type:UserType){
+    return this.http.get(environment.apiUrl+`employee/get/newCode/${companyCode}/${type}`);
   }
   saveSalesman(salesman){
     return this.http.post(environment.apiUrl+`employee/salesman/save`, salesman);
   }
-  getSalesman(code:string=null){
-    return this.http.get(environment.apiUrl+`employee/salesman/get/${code}`);
+  getSalesman(companyCode,code:string=null){
+    return this.http.get(environment.apiUrl+`employee/salesman/get/${companyCode}/${code}`);
   }
-  // purchaseBySalesman(account){
-  //   return this.http.post(environment.apiUrl+`employee/salesman/purchase`, account);
-  // }
   transactionBySalesman(account){
     if(account.type==1){
       return this.http.post(environment.apiUrl+`employee/salesman/purchase`, account);
@@ -33,8 +30,8 @@ export class EmployeeService {
   saveMember(member){
     return this.http.post(environment.apiUrl+`employee/member/save`, member);
   }
-  getMember(code:string=null){
-    return this.http.get(environment.apiUrl+`employee/member/get/${code}`);
+  getMember(companyCode,code:string=null){
+    return this.http.get(environment.apiUrl+`employee/member/get/${companyCode}/${code}`);
   }
   transactionByMember(account){
     if(account.type==1){
@@ -43,10 +40,10 @@ export class EmployeeService {
       return this.http.post(environment.apiUrl+`employee/member/sale`, account);
     }
   }
-  // saleByMember(account){
-  //   return this.http.post(environment.apiUrl+`employee/member/sale`, account);
-  // }
-  count(type:UserType = UserType.Salesman){
-    return this.http.get(environment.apiUrl+`employee/count/${type}`);
+  count(companyCode,type:UserType = UserType.Salesman){
+    return this.http.get(environment.apiUrl+`employee/count/${companyCode}/${type}`);
+  }
+  getEmployees(companyCode){
+    return this.http.get(environment.apiUrl+`employee/get/${companyCode}`);
   }
 }

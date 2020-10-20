@@ -17,7 +17,6 @@ export class LoginComponent implements OnInit {
     password: null,
     userType: 0
   }
-  hasCompany:boolean = true;
   errMsg: string;
 
   constructor(
@@ -27,18 +26,6 @@ export class LoginComponent implements OnInit {
     private toaster: ToastrService
   ) { }
   ngOnInit() {
-    this.countEmployee();
-  }
-  countEmployee(){
-    this.employeeService.count().subscribe((response:any)=>{
-      if(response.status){
-        this.hasCompany = response.result>0;
-      }else{
-        this.hasCompany = false;
-      }
-    },err=>{
-      this.hasCompany = false;
-    })
   }
   login() {
     if (this.user.name && this.user.password) {
@@ -53,8 +40,9 @@ export class LoginComponent implements OnInit {
           sessionStorage.setItem('isAlphaMember', loggedUser.employmentInfo.isAlphaMember?'True':'False');
           sessionStorage.setItem('isBetaMember', loggedUser.employmentInfo.isBetaMember?'True':'False');
           sessionStorage.setItem('fullName', (loggedUser.userType==2 || loggedUser.userType==3)
-          ?loggedUser.employmentInfo.membership.name:loggedUser.employmentInfo.name);
+          ?loggedUser.employmentInfo.membership.name:loggedUser.userType==4?loggedUser.employmentInfo.name:loggedUser.company.name);
           sessionStorage.setItem('sidc', loggedUser.employmentInfo.membership.sidc);
+          sessionStorage.setItem('companyCode', loggedUser.company.code);
           this.router.navigate(['/startup']);
         } else {
           this.errMsg = response.result;

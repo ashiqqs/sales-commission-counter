@@ -22,7 +22,7 @@ export class SalaryComponent implements OnInit {
 
   process(){
     this.isProcessing = true;
-    this.accountService.processSalary().subscribe((response:any)=>{
+    this.accountService.processSalary(sessionStorage.getItem('companyCode')).subscribe((response:any)=>{
       this.isProcessing = false;
       this.isProcessed = true;
       if(response.status){

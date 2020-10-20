@@ -1,3 +1,41 @@
-<p>
-  registration works!
-</p>
+<div class="card row col-7 m-auto">
+  <div class="card-header">
+    <h5 class="text-center">{{title}}</h5>
+  </div>
+  <div class="card-body">
+    <div class="row">
+      <div class="col-md-6 m-auto">
+        <form [formGroup]="registerForm">
+          <div class="form-group row">
+            <label for="code" class="col-md-3">Code</label>
+            <div class="col-md-9">
+              <input formControlName="code" type="text" readonly class="form-control" id="code" placeholder="Code">
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="name" class="col-md-3">Name</label>
+            <div class="col-md-9">
+              <input formControlName="name" type="text" class="form-control" id="name" placeholder="Employee Name">
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="address" class="col-md-3">Address</label>
+            <div class="col-md-9">
+              <input formControlName="address" type="text" class="form-control" id="address"
+                placeholder="Enter Address">
+            </div>
+          </div>
+          <div class="row">
+            <div class="ml-auto">
+              <button (click)="createForm()" class="btn btn-info mr-1">Reset</button>
+              <button (click)="onSubmit()" class="btn btn-success mr-3">Register</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="card-footer">
+    
+  </div>
+</div>

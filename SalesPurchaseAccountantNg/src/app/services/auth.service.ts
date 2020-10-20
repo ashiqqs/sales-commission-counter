@@ -21,8 +21,12 @@ export class AuthService {
       IsBetaMember: sessionStorage.getItem('isBetaMember') == "True" ? true : false,
       membership: {
         sidc: sessionStorage.getItem('sidc')
-      }
+      },
     };
+    user.company = {
+      code : sessionStorage.getItem('companyCode'),
+      name : sessionStorage.getItem('name')
+    }
     return user;
   }
 }

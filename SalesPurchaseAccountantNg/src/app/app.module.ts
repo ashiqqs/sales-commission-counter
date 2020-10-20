@@ -11,6 +11,7 @@ import { HomeModule } from './home/home.module';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { ToastrModule, ToastrService } from 'ngx-toastr';
 import { AppErrorHandler } from './app.error.handler';
+import { HashLocationStrategy, LocationStrategy } from '@angular/common';
 
 @NgModule({
   declarations: [
@@ -30,6 +31,7 @@ import { AppErrorHandler } from './app.error.handler';
   providers: [
     ToastrService,
     {provide: ErrorHandler, useClass: AppErrorHandler},
+    {provide: LocationStrategy, useClass: HashLocationStrategy},
   ],
   bootstrap: [AppComponent]
 })

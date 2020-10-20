@@ -37,7 +37,7 @@ namespace SalePurchaseAccountant.Api
             {
                 options.AddPolicy("AllowOrigin", builder =>
                 {
-                    builder.AllowAnyOrigin()
+                    builder.WithOrigins("http://localhost:2001", "http://localhost:2020","http://192.168.0.111:2001", "http://localhost:4200", "http://192.168.0.111:2002")
                     .AllowAnyHeader()
                     .AllowAnyMethod();
                 });

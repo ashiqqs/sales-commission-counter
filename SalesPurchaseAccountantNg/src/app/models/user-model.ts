@@ -10,4 +10,5 @@ export class UserModel{
     salesAmount:number;
     purchaseAmount:number;
     employmentInfo:any;
+    company:any;
 }

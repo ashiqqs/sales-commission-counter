@@ -15,7 +15,7 @@ namespace SalePurchaseAccountant.DAL
         {
             using (var con = ConnectionGetway.GetConnection())
             {
-                var districts = con.Query<DistrictModel>($"Select * FROM tblDistricts WHERE Id = CASE WHEN {districtId}<>-1 THEN {districtId} ELSE Id END").ToList();
+                var districts = con.Query<DistrictModel>($"Select * FROM tblDistricts WHERE Id = CASE WHEN {districtId}<>-1 THEN {districtId} ELSE Id END ORDER BY Name").ToList();
                 return districts;
             }
         }
@@ -23,7 +23,7 @@ namespace SalePurchaseAccountant.DAL
         {
             using (var con = ConnectionGetway.GetConnection())
             {
-                var thana = con.Query<ThanaModel>($@"Select * FROM tblThana WHERE DistrictId =  (CASE WHEN {districtId}<>-1 THEN {districtId} ELSE DistrictId END) AND Id = (CASE WHEN {thanaId}<>-1 THEN {thanaId} ELSE Id END) ").ToList();
+                var thana = con.Query<ThanaModel>($@"Select * FROM tblThana WHERE DistrictId =  (CASE WHEN {districtId}<>-1 THEN {districtId} ELSE DistrictId END) AND Id = (CASE WHEN {thanaId}<>-1 THEN {thanaId} ELSE Id END)  ORDER BY Name").ToList();
                 return thana;
             }
         }
@@ -31,7 +31,7 @@ namespace SalePurchaseAccountant.DAL
         {
             using(var con = ConnectionGetway.GetConnection())
             {
-                string query = $"INSERT INTO tblCompanies(Code, Name,Address) VALUES('{company.Code}', '{company.Name}',{company.Address}";
+                string query = $"INSERT INTO tblCompanies(Code, Name,Address) VALUES('{company.Code}', '{company.Name}','{company.Address}')";
                 int rowAffect = con.Execute(query);
                 if (rowAffect > 0) { return company; }
                 else { return null; }

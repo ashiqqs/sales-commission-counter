@@ -18,5 +18,10 @@ namespace SalePurchaseAccountant.Api.Controller
             string status = isConnected ? $"Hello {user}, Your Database Connected" : $"Hello {user}, Your Database Disconnected";
             return Ok(status);
         }
+        public IActionResult Test()
+        {
+            string status = $"API running successfully!";
+            return Ok(status);
+        }
     }
 }

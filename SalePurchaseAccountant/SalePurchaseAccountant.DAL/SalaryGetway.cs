@@ -27,32 +27,42 @@ namespace SalePurchaseAccountant.DAL
         public void AddSalesCommission(SqlConnection connection, SqlTransaction transaction, string companyCode, string code, double amount, string month = null)
         {
             month = month ?? DateTime.Now.ToString("yyyyMM");
-            string query = $"UPDATE tblSalaries SET SalesCommission = SalesCommission+{amount} WHERE Code='{code}' AND ProcessedMonth='{month}' AND CompanyCode='{companyCode}'";
+            string query =companyCode!=null
+                ?$"UPDATE tblSalaries SET SalesCommission = SalesCommission+{amount} WHERE Code='{code}' AND ProcessedMonth='{month}' AND CompanyCode='{companyCode}'"
+                :$"UPDATE tblSalaries SET SalesCommission = SalesCommission+{amount} WHERE Code='{code}' AND ProcessedMonth='{month}'";
             connection.Execute(query, transaction: transaction);
 
         }
         public void AddOrdinalCommission(SqlConnection connection, SqlTransaction transaction, string companyCode, string code, double amount, string month = null)
         {
             month = month ?? DateTime.Now.ToString("yyyyMM");
-            string query = $"UPDATE tblSalaries SET OrdinalCommission = OrdinalCommission+{amount} WHERE Code='{code}' AND ProcessedMonth='{month}' AND CompanyCode='{companyCode}'";
+            string query = companyCode!=null
+                ?$"UPDATE tblSalaries SET OrdinalCommission = OrdinalCommission+{amount} WHERE Code='{code}' AND ProcessedMonth='{month}' AND CompanyCode='{companyCode}'"
+                :$"UPDATE tblSalaries SET OrdinalCommission = OrdinalCommission+{amount} WHERE Code='{code}' AND ProcessedMonth='{month}'";
             connection.Execute(query, transaction: transaction);
         }
         public void AddInboundCommission(SqlConnection connection, SqlTransaction transaction, string companyCode,string code, double amount, string month = null)
         {
             month = month ?? DateTime.Now.ToString("yyyyMM");
-            string query = $"UPDATE tblSalaries SET InboundCommission = InboundCommission+{amount} WHERE Code='{code}' AND ProcessedMonth='{month}' AND CompanyCode='{companyCode}'";
+            string query = companyCode!=null
+                ?$"UPDATE tblSalaries SET InboundCommission = InboundCommission+{amount} WHERE Code='{code}' AND ProcessedMonth='{month}' AND CompanyCode='{companyCode}'"
+                :$"UPDATE tblSalaries SET InboundCommission = InboundCommission+{amount} WHERE Code='{code}' AND ProcessedMonth='{month}'";
             connection.Execute(query, transaction: transaction);
         }
         public void AddOutboundCommission(SqlConnection connection, SqlTransaction transaction, string companyCode, string code, double amount, string month = null)
         {
             month = month ?? DateTime.Now.ToString("yyyyMM");
-            string query = $"UPDATE tblSalaries SET OutboundCommission = OutboundCommission+{amount} WHERE Code='{code}' AND ProcessedMonth='{month}' AND CompanyCode='{companyCode}'";
+            string query = companyCode != null
+                ? $"UPDATE tblSalaries SET OutboundCommission = OutboundCommission+{amount} WHERE Code='{code}' AND ProcessedMonth='{month}' AND CompanyCode='{companyCode}'"
+                : $"UPDATE tblSalaries SET OutboundCommission = OutboundCommission+{amount} WHERE Code='{code}' AND ProcessedMonth='{month}'";
             connection.Execute(query, transaction: transaction);
         }
         public void AddGbCommission(SqlConnection connection, SqlTransaction transaction, string companyCode, string code, double amount, string month = null)
         {
             month = month ?? DateTime.Now.ToString("yyyyMM");
-            string query = $"UPDATE tblSalaries SET GbCommission = GbCommission+{amount} WHERE Code='{code}' AND ProcessedMonth='{month}' AND CompanyCode='{companyCode}'";
+            string query = companyCode!=null?
+                $"UPDATE tblSalaries SET GbCommission = GbCommission+{amount} WHERE Code='{code}' AND ProcessedMonth='{month}' AND CompanyCode='{companyCode}'"
+                :$"UPDATE tblSalaries SET GbCommission = GbCommission+{amount} WHERE Code='{code}' AND ProcessedMonth='{month}'";
             connection.Execute(query, transaction: transaction);
         }
         /// <summary>
@@ -66,7 +76,13 @@ namespace SalePurchaseAccountant.DAL
             using (var con = ConnectionGetway.GetConnection())
             {
                 month = (string.IsNullOrEmpty(month) || month=="null") ? DateTime.Now.ToString("yyyyMM"):month;
-                var salaries = con.Query<SalaryViewModel>("usp_GetSalary",param:new { ProcessedMonth=month, Code=code, CompanyCode=companyCode}, commandType:CommandType.StoredProcedure).ToList();
+                object paramObj = new
+                {
+                    ProcessedMonth = month,
+                    Code = (string.IsNullOrEmpty(code) || code=="null")?"":code??"",
+                    CompanyCode = companyCode == "null" ? "" : companyCode ?? ""
+                };
+                var salaries = con.Query<SalaryViewModel>("usp_GetSalary",param:paramObj, commandType:CommandType.StoredProcedure).ToList();
                 return salaries;
             }
         }

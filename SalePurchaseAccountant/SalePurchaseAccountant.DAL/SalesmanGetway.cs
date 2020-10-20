@@ -173,11 +173,19 @@ namespace SalePurchaseAccountant.DAL
             {
                 string query = (string.IsNullOrEmpty(code) || code == "null")
                     ? $"SELECT SUM(Amount)*-1 FROM tblAccounts WHERE CONVERT(VARCHAR(6),OperationDate,112)='{month}' AND Amount<0 AND CompanyCode='{companyCode}'"
-                    : $"SELECT SUM(Amount)*-1 FROM tblAccounts WHERE CONVERT(VARCHAR(6),OperationDate,112)='{month}' AND Amount<0 AND a.Code='{code}' AND CompanyCode='{companyCode}'";
+                    : $"SELECT SUM(Amount)*-1 FROM tblAccounts WHERE CONVERT(VARCHAR(6),OperationDate,112)='{month}' AND Amount<0 AND Code='{code}' AND CompanyCode='{companyCode}'";
                 double amount = con.ExecuteScalar<double>(query);
                 return amount;
             }
         }
 
+        public List<EmployeeViewModel> GetEmployees<EmployeeViewModel>(string companyCode)
+        {
+            using(var con = ConnectionGetway.GetConnection())
+            {
+                var employees = con.Query<EmployeeViewModel>($"SELECT * FROM vw_employees WHERE CompanyCode='{companyCode}'").ToList();
+                return employees;
+            }
+        }
     }
 }

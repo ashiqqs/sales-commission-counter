@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using SalePurchaseAccountant.Api.ViewModels;
 using SalePurchaseAccountant.BLL;
 using SalePurchaseAccountant.Models.Accounts;
 using SalePurchaseAccountant.Models.Employee;
@@ -22,12 +23,12 @@ namespace SalePurchaseAccountant.Api.Controller
         }
 
         [HttpGet]
-        [Route("get/newCode/{type}")]
-        public IActionResult GetNewCode(UserType type)
+        [Route("get/newCode/{companyCode}/{type}")]
+        public IActionResult GetNewCode(string companyCode,UserType type)
         {
             try
             {
-                string code = _employee.GetNewCode(type);
+                string code = _employee.GetNewCode(companyCode, type);
                 if (!String.IsNullOrEmpty(code))
                 {
                     return Ok(new { status = true, result = code });
@@ -70,12 +71,12 @@ namespace SalePurchaseAccountant.Api.Controller
         }
 
         [HttpGet]
-        [Route("salesman/get/{code}")]
-        public IActionResult GetSalesman(string code)
+        [Route("salesman/get/{companyCode}/{code}")]
+        public IActionResult GetSalesman(string companyCode, string code)
         {
             try
             {
-                var salesman = _employee.GetSalesman(code);
+                var salesman = _employee.GetSalesman(companyCode,code);
                 if (salesman.Count > 0)
                 {
                     return Ok(new { status = true, result = salesman });
@@ -148,12 +149,12 @@ namespace SalePurchaseAccountant.Api.Controller
         }
 
         [HttpGet]
-        [Route("member/get/{code}")]
-        public IActionResult GetMember(string code)
+        [Route("member/get/{companyCode}/{code}")]
+        public IActionResult GetMember(string companyCode,string code)
         {
             try
             {
-                var members = _employee.GetMember(code);
+                var members = _employee.GetMember(companyCode,code);
                 if (members.Count > 0)
                 {
                     return Ok(new { status = true, result = members });
@@ -203,13 +204,36 @@ namespace SalePurchaseAccountant.Api.Controller
         }
 
         [HttpGet]
-        [Route("count/{type}")]
-        public IActionResult Count(UserType type)
+        [Route("count/{companyCode}/{type}")]
+        public IActionResult Count(string companyCode, UserType type)
         {
             try
             {
-                var count = _employee.Count(type);
+                var count = _employee.Count(companyCode,type);
                 return Ok(new { status = true, result = count });
+            }
+            catch (InvalidException err) { return Ok(new { status = false, result = err.Message }); }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet]
+        [Route("get/{companyCode}")]
+        public IActionResult GetEmployees(string companyCode)
+        {
+            try
+            {
+                var employees = _employee.GetEmployees<EmployeeViewModel>(companyCode);
+                if (employees.Count > 0)
+                {
+                    return Ok(new { status = true, result = employees });
+                }
+                else
+                {
+                    return NotFound(new { status = false, result = "No Employee found" });
+                }
             }
             catch (InvalidException err) { return Ok(new { status = false, result = err.Message }); }
             catch (Exception ex)

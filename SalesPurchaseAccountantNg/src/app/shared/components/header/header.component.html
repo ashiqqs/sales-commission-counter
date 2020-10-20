@@ -14,6 +14,7 @@
         <button *ngIf="user.userType!=1" color="primary" routerLink="/account/sale-purchase" mat-flat-button>Transaction</button>
         <button *ngIf="user.userType==1" color="primary" routerLink="/account/salary" mat-flat-button>Process Salary</button>
         <button color="primary" routerLink="/account/report" mat-flat-button>Reports</button>
+        <button *ngIf="user.userType==1" color="primary" [routerLink]="['/employee/details']" mat-flat-button>Employees</button>
         <button *ngIf="user.userType==1 || user.userType==4" color="primary" [routerLink]="['/employee/create',{userType:4}]" mat-flat-button>New Salesman</button>
         <button *ngIf="user.userType==1" color="primary" [routerLink]="['/employee/create',{userType:2}]" mat-flat-button>New Alpha Member</button>
         <button *ngIf="user.userType==1" color="primary" [routerLink]="['/employee/create',{userType:3}]" mat-flat-button>New Beta Member</button>

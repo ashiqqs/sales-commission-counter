@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { EmployeeService } from 'src/app/services/employee.service';
 
 @Component({
   selector: 'app-employee-details',
@@ -7,9 +8,24 @@ import { Component, OnInit } from '@angular/core';
 })
 export class EmployeeDetailsComponent implements OnInit {
 
-  constructor() { }
+  companyCode = sessionStorage.getItem('companyCode');
+  employees:any[]=[]
+  constructor(
+    private employeeService:EmployeeService
+  ) { }
 
   ngOnInit() {
+    this.getAllSalesman()
   }
 
+  getAllSalesman() {
+    this.employeeService.getEmployees(this.companyCode)
+      .subscribe((response: any) => {
+        if (response.status) {
+          this.employees = response.result as any[];
+        } else {
+          this.employees = [];
+        }
+      })
+  }
 }

@@ -64,7 +64,7 @@ namespace SalePurchaseAccountant.Api.Controller
             }
         }
 
-        [HttpGet]
+        [HttpGet, Route("GetnewCompanyCode")]
         public IActionResult GetnewCompanyCode()
         {
             try
@@ -85,7 +85,7 @@ namespace SalePurchaseAccountant.Api.Controller
                 return BadRequest(ex.Message);
             }
         }
-        [HttpPost]
+        [HttpPost, Route("Registration")]
         public IActionResult Registration(CompanyModel company)
         {
             try
@@ -93,7 +93,7 @@ namespace SalePurchaseAccountant.Api.Controller
                 var newCompany =_settings.Registration(company);
                 if (newCompany!=null)
                 {
-                    return Ok(new { status = true, result = "Company Registered Successfully." });
+                    return Ok(new { status = true, result = newCompany});
                 }
                 else
                 {

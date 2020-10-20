@@ -16,8 +16,8 @@ namespace SalePurchaseAccountant.DAL
         {
             using (var con = ConnectionGetway.GetConnection())
             {
-                string query = $@"INSERT INTO tblMembers (Code, Name, MemberType,JoiningDate, ThanaId, Email, Address, ContactNo,Sidc)
-                                VALUES('{member.Code}', '{member.Name}',{member.MemberType},'{member.JoiningDate.Date}',{member.ThanaId},'{member.Email}','{member.Address}','{member.ContactNo}','{member.Sidc}')";
+                string query = $@"INSERT INTO tblMembers (Code, Name, MemberType,JoiningDate, ThanaId, Email, Address, ContactNo,Sidc,CompanyCode)
+                                VALUES('{member.Code}', '{member.Name}',{member.MemberType},'{member.JoiningDate.Date}',{member.ThanaId},'{member.Email}','{member.Address}','{member.ContactNo}','{member.Sidc}','{member.CompanyCode}')";
                 return con.Execute(query) > 0;
             }
         }
@@ -131,8 +131,8 @@ namespace SalePurchaseAccountant.DAL
             {
                 month = month ?? DateTime.Now.ToString("YYYYMM");
                 string query = (!string.IsNullOrEmpty(code) && code != "null")
-                    ? ((type == UserType.AlphaMember) ? $"SELECT SUM(a.Amount)*-1 FROM tblAccounts a JOIN tblSalesman sm ON a.Code=sm.Code WHERE a.Code={code} AND sm.IsAlphaMember=1 AND CONVERT(VARCHAR(6),a.OperationDate,112)='{month}' AND a.Amount<0 AND a.CompanyCode='{companyCode}'"
-                     : $"SELECT SUM(a.Amount)*-1 FROM tblAccounts a  JOIN tblSalesman sm ON a.Code=sm.Code WHERE a.Code={code} AND sm.IsBetaMember=1 AND CONVERT(VARCHAR(6),a.OperationDate,112)='{month}' AND a.Amount<0 AND a.CompanyCode='{companyCode}'")
+                    ? ((type == UserType.AlphaMember) ? $"SELECT SUM(a.Amount)*-1 FROM tblAccounts a JOIN tblSalesman sm ON a.Code=sm.Code WHERE a.Code='{code}' AND sm.IsAlphaMember=1 AND CONVERT(VARCHAR(6),a.OperationDate,112)='{month}' AND a.Amount<0 AND a.CompanyCode='{companyCode}'"
+                     : $"SELECT SUM(a.Amount)*-1 FROM tblAccounts a  JOIN tblSalesman sm ON a.Code=sm.Code WHERE a.Code='{code}' AND sm.IsBetaMember=1 AND CONVERT(VARCHAR(6),a.OperationDate,112)='{month}' AND a.Amount<0 AND a.CompanyCode='{companyCode}'")
                     : ((type == UserType.AlphaMember)
                     ? $"SELECT SUM(a.Amount)*-1 FROM tblAccounts a  JOIN tblSalesman sm ON a.Code=sm.Code WHERE sm.IsAlphaMember=1 AND CONVERT(VARCHAR(6),a.OperationDate,112)='{month}' AND a.Amount<0"
                     : $"SELECT SUM(a.Amount)*-1 FROM tblAccounts a JOIN tblSalesman sm ON a.Code=sm.Code WHERE sm.IsBetaMember=1 AND CONVERT(VARCHAR(6),a.OperationDate,112)='{month}' AND a.Amount<0");

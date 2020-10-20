@@ -23,7 +23,7 @@ namespace SalePurchaseAccountant.BLL
             _member = new MemberGetway();
         }
 
-        public bool ProcessSalary()
+        public bool ProcessSalary(string companyCode,string month)
         {
             using (var con = ConnectionGetway.GetConnection())
             {
@@ -32,10 +32,9 @@ namespace SalePurchaseAccountant.BLL
                 {
                     try
                     {
-                        var company = _salesman.Get("E-001").FirstOrDefault();
-                        var topLevelSalesman = _salesman.GetAssociates(company.Code);
-                        _salary.CreateNewSalaryAcc(con, tran);
-                        ProcessOrdinalCommission(con, tran);
+                        var topLevelSalesman = _salesman.GetAssociates(companyCode, companyCode);
+                        _salary.CreateNewSalaryAcc(con, tran,companyCode,month);
+                        ProcessOrdinalCommission(con, tran, companyCode);
                         ProcessSalesBoundGbCommission(con, tran, topLevelSalesman);
                         tran.Commit();
                         return true;
@@ -48,74 +47,77 @@ namespace SalePurchaseAccountant.BLL
                 }
             }
         }
-        public List<SalaryViewModel> GetSalary<SalaryViewModel>(string code, string month)
+        public List<SalaryViewModel> GetSalary<SalaryViewModel>(string companyCode, string code, string month)
         {
-            return _salary.GetSalary<SalaryViewModel>(code, month);
+            return _salary.GetSalary<SalaryViewModel>(companyCode, code, month);
         }
         private void ProcessSalesBoundGbCommission(SqlConnection con, SqlTransaction tran, List<SalesmanModel> salesmanList)
         {
             foreach (var salesman in salesmanList)
             {
-                double salesAmount = _salesman.GetSalesAmount(code: salesman.Code);
+                double salesAmount = _salesman.GetSalesAmount(salesman.CompanyCode, code: salesman.Code);
                 if (salesman.IsAlphaMember)
                 {
                     double inboundCommissionPercent = _policy.InboundCommissionPercentage(salesAmount);
                     double inboundCommission = salesAmount * inboundCommissionPercent / 100;
-                    _salary.AddInboundCommission(con, tran, salesman.Code, inboundCommission);
+                    _salary.AddInboundCommission(con, tran,salesman.CompanyCode, salesman.Code, inboundCommission);
                 }
                 if (salesman.IsBetaMember)
                 {
                     double outboundCommissionPercent = _policy.OutboundCommissionPercentage(salesAmount);
                     double outboundCommission = salesAmount * outboundCommissionPercent / 100;
-                    _salary.AddOutboundCommission(con, tran, salesman.Code, outboundCommission);
+                    _salary.AddOutboundCommission(con, tran,salesman.CompanyCode, salesman.Code, outboundCommission);
 
                 }
                 ProcessSalesCommission(con, tran, salesman, salesAmount);
                 ProcessGbCommission(con, tran, salesman, salesAmount);
-                var associates = _salesman.GetAssociates(salesman.Code);
+                var associates = _salesman.GetAssociates(salesman.CompanyCode, salesman.Code);
                 ProcessSalesBoundGbCommission(con, tran, associates);
 
-                salesman.Designation = _policy.NextDesignation(salesman.Code);
+                salesman.Designation = _policy.NextDesignation(salesman.CompanyCode, salesman.Code);
                 _salesman.Update(con, tran, salesman);
             }
         }
         private void ProcessSalesCommission(SqlConnection con, SqlTransaction tran, SalesmanModel salesman, double salesAmount, double paidCommissionPercent = 0)
         {
             if (paidCommissionPercent == 26) { return; }
-            double personalSalesAmount = _salesman.GetSalesAmount(code: salesman.Code);
+
+            double personalSalesAmount = _salesman.GetSalesAmount(salesman.CompanyCode,code: salesman.Code);
             double selfCommissionPercent = _policy.SalesCommissionPercentage(salesman.Designation, salesAmount);
             double payableAmount = salesAmount * (selfCommissionPercent - paidCommissionPercent) / 100;
 
             if (_policy.IsEligible(personalSalesAmount))
             {
-                _salary.AddSalesCommission(con, tran, salesman.Code, payableAmount);
+                _salary.AddSalesCommission(con, tran, salesman.CompanyCode,salesman.Code, payableAmount);
                 paidCommissionPercent += (selfCommissionPercent - paidCommissionPercent);
             }
             if (!string.IsNullOrEmpty(salesman.ReferenceCode))
             {
-                var reference = _salesman.Get(salesman.ReferenceCode).FirstOrDefault();
-                ProcessSalesCommission(con, tran, reference, salesAmount, paidCommissionPercent);
-            }
-            else
-            {
-                //Unpaid commisiion added to company account.
-                _salary.AddSalesCommission(con, tran, salesman.Code, salesAmount * (26 - paidCommissionPercent) / 100);
+                var reference = _salesman.Get(salesman.CompanyCode,salesman.ReferenceCode).FirstOrDefault();
+                if (reference == null)
+                {
+                    _salary.AddSalesCommission(con, tran, null, salesman.CompanyCode, salesAmount * (26 - paidCommissionPercent) / 100);
+                }
+                else
+                {
+                    ProcessSalesCommission(con, tran, reference, salesAmount, paidCommissionPercent);
+                }
             }
         }
         private void ProcessGbCommission(SqlConnection con, SqlTransaction tran, SalesmanModel salesman, double salesAmount)
         {
             var gbPolicy = _policy.GbCommissionPercentage();
-            SalesmanModel reference = new SalesmanModel { Id = salesman.Id, Code = salesman.Code, ReferenceCode = salesman.ReferenceCode };
+            SalesmanModel reference = new SalesmanModel { Id = salesman.Id, Code = salesman.Code, ReferenceCode = salesman.ReferenceCode, CompanyCode = salesman.CompanyCode };
             double personalSalesAmount, commission;
             int level;
             for (level = 0; level < 10; level++)
             {
                 if (reference == null || string.IsNullOrEmpty(reference.ReferenceCode)) { break; }
-                personalSalesAmount = _salesman.GetSalesAmount(code: reference.Code);
+                personalSalesAmount = _salesman.GetSalesAmount(reference.CompanyCode, code: reference.Code);
                 if (_policy.IsEligible(personalSalesAmount))
                 {
                     commission = salesAmount * gbPolicy[level] / 100;
-                    _salary.AddGbCommission(connection: con, transaction: tran, reference.Code, commission);
+                    _salary.AddGbCommission(connection: con, transaction: tran,reference.CompanyCode, reference.Code, commission);
                 }
                 else
                 {
@@ -125,39 +127,39 @@ namespace SalePurchaseAccountant.BLL
                     }
                 }
 
-                reference = _salesman.Get(reference.ReferenceCode).FirstOrDefault();
-
+                reference = _salesman.Get(reference.CompanyCode, reference.ReferenceCode).FirstOrDefault();
+                if (reference == null) { break; }
             }
             while (level < 10)
             {
                 //Unpaid commisiion added to company account.
                 commission = salesAmount * gbPolicy[level++] / 100;
-                _salary.AddGbCommission(con, tran, "E-001", commission);
+                _salary.AddGbCommission(con, tran, null,salesman.CompanyCode, commission);
             }
         }
-        private void ProcessOrdinalCommission(SqlConnection con, SqlTransaction tran)
+        private void ProcessOrdinalCommission(SqlConnection con, SqlTransaction tran, string companyCode)
         {
-            var countByDesignation = _salesman.CountAssociates();
-            double companiesSales = _member.GetSalesAmount(UserType.AlphaMember) + _member.GetSalesAmount(UserType.BetaMember);
+            var countByDesignation = _salesman.CountAssociates(companyCode);
+            double companiesSales = _member.GetSalesAmount(companyCode,UserType.AlphaMember) + _member.GetSalesAmount(companyCode,UserType.BetaMember);
             foreach (var dict in countByDesignation)
             {
                 double commissionPercent = _policy.OrdinalCommissionPercentage(dict.Key);
                 double commission = companiesSales * commissionPercent / 100;
 
-                var salesmanList = _salesman.Get(dict.Key);
+                var salesmanList = _salesman.Get(companyCode,dict.Key);
                 int eligible = 0;
                 foreach (var salesman in salesmanList)
                 {
                     if (_policy.IsEligibleForOrdinalCommission(salesman))
                     {
-                        _salary.AddOrdinalCommission(con, tran, salesman.Code, commission / dict.Value);
+                        _salary.AddOrdinalCommission(con, tran, companyCode,salesman.Code, commission / dict.Value);
                         eligible++;
                     }
                 }
                 if (eligible == 0)
                 {
                     //Unpaid commisiion added to company account.
-                    _salary.AddOrdinalCommission(con, tran, "E-001", commission);
+                    _salary.AddOrdinalCommission(con, tran,null, companyCode, commission);
                 }
             }
         }

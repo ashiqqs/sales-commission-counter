@@ -8,10 +8,8 @@
         <div class="form-group row">
           <label for="code" class="col-md-4">Code <span class="text-danger">*</span></label>
           <div class="col-md-8">
-            <input [(ngModel)]="code" name="code" #codeField="ngModel" type="text" required class="form-control" placeholder="Employee Code">
-            <div *ngIf="codeField.invalid && (codeField.dirty || codeField.touched)" class="text-danger">
-              <span *ngIf="codeField.errors.required">Code is required</span>
-            </div>
+            <input [(ngModel)]="code" name="code" #codeField="ngModel" type="text" class="form-control" placeholder="Employee Code">
+           
           </div>
         </div>
         <div class="row">
@@ -51,7 +49,7 @@
               <td>{{salary.gbCommission}}</td>
               <td>{{salary.total}}</td>
             </tr>
-            <tr *ngIf="totalSalary">
+            <tr *ngIf="totalSalary && this.salaries.length>0">
               <td colspan="4" class="text-right">Total</td>
               <td>{{totalSalary.salesCommission}}</td>
               <td>{{totalSalary.ordinalCommission}}</td>

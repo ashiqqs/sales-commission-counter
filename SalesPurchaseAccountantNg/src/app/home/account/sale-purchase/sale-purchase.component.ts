@@ -17,7 +17,7 @@ export class SalePurchaseComponent implements OnInit {
   vendors: any[] = [];
   customers: any[] = [];
   transactionForm: FormGroup;
-
+  companyCode = sessionStorage.getItem('companyCode');
   constructor(
     private employeService: EmployeeService,
     private activateRouter: ActivatedRoute,
@@ -32,7 +32,7 @@ export class SalePurchaseComponent implements OnInit {
     this.getVendors();
   }
   getCustomers() {
-    this.employeService.getSalesman().subscribe((response: any) => {
+    this.employeService.getSalesman(this.companyCode).subscribe((response: any) => {
       if (response.status) {
         this.customers = response.result as any[];
       }
@@ -41,9 +41,11 @@ export class SalePurchaseComponent implements OnInit {
     })
   }
   getVendors() {
-    this.employeService.getMember().subscribe((response: any) => {
+    this.employeService.getMember(this.companyCode).subscribe((response: any) => {
       if (response.status) {
         this.vendors = response.result as any[];
+        var index = this.vendors.findIndex(c=>c.sidc==this.user.code);
+        this.vendors.splice(index,1)
       }
     }, err => {
       this.toaster.error(err.message)
@@ -95,7 +97,8 @@ export class SalePurchaseComponent implements OnInit {
       vendorCode: ["0", []],
       customerCode: ["0",[]],
       sidc: [this.user.employmentInfo.membership.sidc,[]],
-      type: ["0", [Validators.required]]
+      type: ["0", [Validators.required]],
+      companyCode:[this.companyCode,[]]
     })
   }
 

@@ -20,11 +20,11 @@ namespace SalePurchaseAccountant.BLL
         }
         public bool IsEligibleForOrdinalCommission(SalesmanModel salesman)
         {
-            double personalSale = _salesman.GetSalesAmount(code: salesman.Code);
+            double personalSale = _salesman.GetSalesAmount(salesman.CompanyCode, code: salesman.Code);
             if (!IsEligible(personalSale)){
                 return false;
             }
-            double associatesSale = _salesman.GetAssociatesSalesAmount(referenceCode: salesman.ReferenceCode);
+            double associatesSale = _salesman.GetAssociatesSalesAmount(salesman.CompanyCode, referenceCode: salesman.ReferenceCode);
             switch (salesman.Designation)
             {
                 case Designation.C:{
@@ -33,7 +33,7 @@ namespace SalePurchaseAccountant.BLL
                 case Designation.D:{
                        if(associatesSale >= 6000)
                         {
-                            var associates = _salesman.GetAssociates(salesman.Code, (int)Designation.C);
+                            var associates = _salesman.GetAssociates(salesman.CompanyCode, salesman.Code, (int)Designation.C);
                             bool isEligible = false;
                             foreach (var associate in associates)
                             {
@@ -46,19 +46,19 @@ namespace SalePurchaseAccountant.BLL
                 case Designation.E:{
                         if ((personalSale + associatesSale) >= 70000)
                         {
-                            var associatesB = _salesman.GetAssociates(salesman.Code, (int)Designation.B);
+                            var associatesB = _salesman.GetAssociates(salesman.CompanyCode, salesman.Code, (int)Designation.B);
                             int eligibleB = 0;
                             foreach(var associate in associatesB)
                             {
                                 if (eligibleB == 3) { break; }
-                                if (IsEligible(_salesman.GetSalesAmount(code: associate.Code)))
+                                if (IsEligible(_salesman.GetSalesAmount(associate.CompanyCode, code: associate.Code)))
                                 {
                                     eligibleB++;
                                 }
                             }
                             if (eligibleB == 3)
                             {
-                                var associatesC = _salesman.GetAssociates(salesman.Code, (int)Designation.C);
+                                var associatesC = _salesman.GetAssociates(salesman.CompanyCode,salesman.Code, (int)Designation.C);
                                 int eligibleC = 0;
                                 foreach (var associate in associatesC)
                                 {
@@ -75,12 +75,12 @@ namespace SalePurchaseAccountant.BLL
                     }
                 case Designation.F:{
                         #region Checking B Eligiblity
-                        var associatesB = _salesman.GetAssociates(salesman.Code, (int)Designation.B);
+                        var associatesB = _salesman.GetAssociates(salesman.CompanyCode, salesman.Code, (int)Designation.B);
                         int eligibleB = 0;
                         foreach(var associate in associatesB)
                         {
                             if (eligibleB == 2) { break; }
-                            if (IsEligible(_salesman.GetSalesAmount(code: associate.Code)))
+                            if (IsEligible(_salesman.GetSalesAmount(salesman.CompanyCode, code: associate.Code)))
                             {
                                 eligibleB++;
                             }
@@ -89,7 +89,7 @@ namespace SalePurchaseAccountant.BLL
                         #endregion
 
                         #region #region Checking C Eligiblity
-                        var associatesC = _salesman.GetAssociates(salesman.Code, (int)Designation.C);
+                        var associatesC = _salesman.GetAssociates(salesman.CompanyCode, salesman.Code, (int)Designation.C);
                         bool eligibleC = false;
                         foreach (var associate in associatesC)
                         {
@@ -103,7 +103,7 @@ namespace SalePurchaseAccountant.BLL
                         #endregion
 
                         #region #region Checking E Eligiblity
-                        var associatesE = _salesman.GetAssociates(salesman.Code, (int)Designation.E);
+                        var associatesE = _salesman.GetAssociates(salesman.CompanyCode, salesman.Code, (int)Designation.E);
                         int eligibleE = 0;
                         foreach (var associate in associatesE)
                         {
@@ -118,7 +118,7 @@ namespace SalePurchaseAccountant.BLL
 
                     }
                 case Designation.G:{
-                        var associatesE = _salesman.GetAssociates(salesman.Code, (int)Designation.E);
+                        var associatesE = _salesman.GetAssociates(salesman.CompanyCode, salesman.Code, (int)Designation.E);
                         int eligibleE = 0;
                         foreach (var associate in associatesE)
                         {
@@ -131,7 +131,7 @@ namespace SalePurchaseAccountant.BLL
                         return eligibleE >= 4;
                     }
                 case Designation.H:{
-                        var associatesE = _salesman.GetAssociates(salesman.Code, (int)Designation.E);
+                        var associatesE = _salesman.GetAssociates(salesman.CompanyCode, salesman.Code, (int)Designation.E);
                         int eligibleE = 0;
                         foreach (var associate in associatesE)
                         {
@@ -144,7 +144,7 @@ namespace SalePurchaseAccountant.BLL
                         return eligibleE >= 6;
                     }
                 case Designation.I:{
-                        var associatesH = _salesman.GetAssociates(salesman.Code, (int)Designation.H);
+                        var associatesH = _salesman.GetAssociates(salesman.CompanyCode, salesman.Code, (int)Designation.H);
                         int eligibleH = 0;
                         foreach (var associate in associatesH)
                         {
@@ -157,7 +157,7 @@ namespace SalePurchaseAccountant.BLL
                         return eligibleH >= 6;
                     }
                 case Designation.J:{
-                        var associatesI = _salesman.GetAssociates(salesman.Code, (int)Designation.I);
+                        var associatesI = _salesman.GetAssociates(salesman.CompanyCode, salesman.Code, (int)Designation.I);
                         int eligibleI = 0;
                         foreach (var associate in associatesI)
                         {
@@ -170,7 +170,7 @@ namespace SalePurchaseAccountant.BLL
                         return eligibleI >= 3;
                     }
                 case Designation.K:{
-                        var associatesJ = _salesman.GetAssociates(salesman.Code, (int)Designation.J);
+                        var associatesJ = _salesman.GetAssociates(salesman.CompanyCode, salesman.Code, (int)Designation.J);
                         int eligibleJ = 0;
                         foreach (var associate in associatesJ)
                         {
@@ -264,9 +264,9 @@ namespace SalePurchaseAccountant.BLL
         {
             return new double[10] {2, 1.5, 1, 0.5, 0.5, 0.5, 0.5 ,0.5,0.25,0.25};
         }
-        public  Designation NextDesignation(string code)
+        public  Designation NextDesignation(string companyCode,string code)
         {
-            Dictionary< Designation,int> associates = _salesman.CountAssociates(code);
+            Dictionary< Designation,int> associates = _salesman.CountAssociates(companyCode, code);
             if (associates[ Designation.J] >= 2)
             {
                 return  Designation.K;
